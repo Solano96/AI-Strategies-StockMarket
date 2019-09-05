@@ -1,0 +1,154 @@
+ACA.PA
+
+Inicial     : 6000.00
+Final       : 12559.20
+Ganancia(%) : 1.09
+Ganancias   : 6559.20
+Max DD      : -46.89
+Trades total: 0
+Trades+     : 0
+Trades-     : 0
+Avg trade   : 0.00
+Avg profit  : 0.00
+Avg loss    : 0.00
+Profit/Loss : 99999999.00
+AGN.AS
+
+Inicial     : 6000.00
+Final       : 12587.98
+Ganancia(%) : 1.10
+Ganancias   : 6587.98
+Max DD      : -29.16
+Trades total: 0
+Trades+     : 0
+Trades-     : 0
+Avg trade   : 0.00
+Avg profit  : 0.00
+Avg loss    : 0.00
+Profit/Loss : 99999999.00
+ALV.DE
+
+Inicial     : 6000.00
+Final       : 10136.00
+Ganancia(%) : 0.69
+Ganancias   : 4136.00
+Max DD      : -26.08
+Trades total: 0
+Trades+     : 0
+Trades-     : 0
+Avg trade   : 0.00
+Avg profit  : 0.00
+Avg loss    : 0.00
+Profit/Loss : 99999999.00
+BLND.L
+
+Inicial     : 6000.00
+Final       : 8178.75
+Ganancia(%) : 0.36
+Ganancias   : 2178.75
+Max DD      : -16.44
+Trades total: 0
+Trades+     : 0
+Trades-     : 0
+Avg trade   : 0.00
+Avg profit  : 0.00
+Avg loss    : 0.00
+Profit/Loss : 99999999.00
+BME.MC
+
+Inicial     : 6000.00
+Final       : 7783.50
+Ganancia(%) : 0.30
+Ganancias   : 1783.50
+Max DD      : -36.06
+Trades total: 0
+Trades+     : 0
+Trades-     : 0
+Avg trade   : 0.00
+Avg profit  : 0.00
+Avg loss    : 0.00
+Profit/Loss : 99999999.00
+DB1.DE
+
+Inicial     : 6000.00
+Final       : 8266.92
+Ganancia(%) : 0.38
+Ganancias   : 2266.92
+Max DD      : -29.53
+Trades total: 0
+Trades+     : 0
+Trades-     : 0
+Avg trade   : 0.00
+Avg profit  : 0.00
+Avg loss    : 0.00
+Profit/Loss : 99999999.00
+SAB.MC
+
+Inicial     : 6000.00
+Final       : 4595.51
+Ganancia(%) : -0.23
+Ganancias   : -1404.49
+Max DD      : -50.77
+Trades total: 0
+Trades+     : 0
+Trades-     : 0
+Avg trade   : 0.00
+Avg profit  : 0.00
+Avg loss    : 0.00
+Profit/Loss : 99999999.00
+SAMPO.HE
+
+Inicial     : 6000.00
+Final       : 11139.66
+Ganancia(%) : 0.86
+Ganancias   : 5139.66
+Max DD      : -18.25
+Trades total: 0
+Trades+     : 0
+Trades-     : 0
+Avg trade   : 0.00
+Avg profit  : 0.00
+Avg loss    : 0.00
+Profit/Loss : 99999999.00
+SAN
+
+Inicial     : 6000.00
+Final       : 6950.57
+Ganancia(%) : 0.16
+Ganancias   : 950.57
+Max DD      : -43.92
+Trades total: 0
+Trades+     : 0
+Trades-     : 0
+Avg trade   : 0.00
+Avg profit  : 0.00
+Avg loss    : 0.00
+Profit/Loss : 99999999.00
+SAB.MC
+
+Inicial     : 6000.00
+Final       : 4595.51
+Ganancia(%) : -0.23
+Ganancias   : -1404.49
+Max DD      : -50.77
+Trades total: 0
+Trades+     : 0
+Trades-     : 0
+Avg trade   : 0.00
+Avg profit  : 0.00
+Avg loss    : 0.00
+Profit/Loss : 99999999.00
+SAB.MC
+
+Inicial     : 6000.00
+Final       : 4595.51
+Ganancia(%) : -0.23
+Ganancias   : -1404.49
+Max DD      : -50.77
+Trades total: 0
+Trades+     : 0
+Trades-     : 0
+Avg trade   : 0.00
+Avg profit  : 0.00
+Avg loss    : 0.00
+Profit/Loss : 99999999.00
