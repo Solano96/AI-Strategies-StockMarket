@@ -2,11 +2,11 @@
 
 Program to predict the market trend using neural networks.
 
-## Getting Started
+## Getting Started 🚀
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-### Prerequisites
+### Prerequisites 📋
 
 Have installed Python3, you can check with the following command in your terminal:
 
@@ -33,7 +33,7 @@ To use the program with interface is necessary to intall tkinter with the follow
 sudo apt-get install python3-tk
 ```
 
-### Installing
+### Installing 🔧
 
 First clone the repository:
 ```
@@ -52,7 +52,7 @@ Then run the following command to install needed libs:
 pip3 install -r requirements.txt
 ```
 
-## Usage
+## Usage 📦
 
 You can use the command line program, that can be execute as follow:
 
@@ -79,6 +79,6 @@ python3 interface.py
 <img src="img/interfaz.png"
      style="float: left; margin-right: 10px;" />
 
-## Author
+## Author ✒️
 
 * **Francisco Solano López Rodríguez**
