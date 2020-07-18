@@ -1,5 +1,17 @@
+# Python compiled files
+*.pyc
 __pycache__
+
+# Virtual env
+venv
+
+# Cache folder
+.cache
+
+# Specific things
 resultados/resultados_*.txt'
 img/simulacion_*
 img/ganancias
 app.desktop
+
+

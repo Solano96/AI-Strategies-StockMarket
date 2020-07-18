@@ -21,13 +21,6 @@ sudo apt-get update
 sudo apt-get install python3
 ```
 
-Have pip3 installed, pip3 is a package manager for Python packages
-
-```
-sudo apt-get update
-sudo apt-get -y install python3-pip
-```
-
 To use the program with interface is necessary to intall tkinter with the following command:
 ```
 sudo apt-get install python3-tk
@@ -40,19 +33,19 @@ First clone the repository:
 git clone https://github.com/Solano96/TFG.git
 ```
 
-Once you have downloaded the repository, move to the folder with *cd*.
-Now, you have to activate the virtual environment:
+Now we need to install some dependencies. To do this, execute the following command:
 
-```
-source env/bin/activate
-```
-
-Then run the following command to install needed libs:
-```
-pip3 install -r requirements.txt
+```bash
+./scripts/install_local.sh
 ```
 
 ## Usage 📦
+
+First we need to activate the virtual environment with:
+
+```bash
+. venv/bin/activate
+```
 
 You can use the command line program, that can be execute as follow:
 

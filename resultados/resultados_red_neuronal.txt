@@ -1,0 +1,19 @@
+SAN
+
+Train score : 64.61
+Test score  : 57.94
+
+Inicial     : 6000.00
+Final       : 6437.35
+Ganancia(%) : 0.07
+Ganancias   : 437.35
+Max DD      : -24.92
+Trades total: 8
+Trades+     : 5
+Trades-     : 3
+Avg trade   : 0.01
+Avg profit  : 0.06
+Avg loss    : -0.07
+Profit/Loss : 0.86
+
+
