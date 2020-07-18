@@ -32,6 +32,7 @@ virtualenv --python=/usr/bin/python3 --system-site-packages venv
 # install dependencies
 pip install -r requirements.txt --upgrade --force-reinstall
 
+# Create folder
 mkdir resultados
 mkdir data
 
