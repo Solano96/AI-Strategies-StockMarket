@@ -9,7 +9,7 @@ venv
 .cache
 
 # Specific things
-resultados/resultados_*.txt'
+resultados
 img/simulacion_*
 img/ganancias
 app.desktop
