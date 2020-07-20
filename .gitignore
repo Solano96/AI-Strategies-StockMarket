@@ -10,6 +10,7 @@ venv
 
 # Specific things
 resultados
+data
 img/simulacion_*
 img/ganancias
 app.desktop

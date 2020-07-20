@@ -36,7 +36,7 @@ git clone https://github.com/Solano96/TFG.git
 Now we need to install some dependencies. To do this, execute the following command:
 
 ```bash
-./scripts/install_local.sh
+sh scripts/install_local.sh
 ```
 
 ## Usage 📦
