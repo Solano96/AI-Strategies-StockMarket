@@ -69,9 +69,6 @@ The other alternative is to use the version with interface, this version can be 
 python3 interface.py
 ```
 
-<img src="img/interfaz.png"
-     style="float: left; margin-right: 10px;" />
-
 ## Author ✒️
 
 * **Francisco Solano López Rodríguez**
