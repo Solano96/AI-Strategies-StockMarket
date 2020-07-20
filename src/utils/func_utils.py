@@ -14,17 +14,17 @@ def getData(data_name):
 
     print("Cargando datos...")
 
-    path_data = 'data/'+data_name+'.csv'
+    path_data = '../data/'+data_name+'.csv'
     df = None
 
     # Comprobamos si los datos ya existen
     # Si no existen los descargamos y los guardamos en la carpeta data
     if os.path.exists(path_data):
-        print('Datos existentes en /data.')
+        print('Datos existentes en ../data.')
         df = pd.read_csv(path_data, index_col = "Date", parse_dates = True)
         print(path_data + ' cargado con éxito.')
     else:
-        print('Datos no existentes en /data.')
+        print('Datos no existentes en ../data.')
         print('Descargando datos..')
         from_date = '2000-01-01'
         today = datetime.datetime.now()
@@ -34,8 +34,8 @@ def getData(data_name):
         df = yf.download(data_name, from_date, today)
         df = df[['Open','High', 'Low', 'Close', 'Volume']]
 
-        if not os.path.exists('data'):
-            os.makedirs('data')
+        if not os.path.exists('../data'):
+            os.makedirs('../data')
 
         df.to_csv(path_data)
 

@@ -44,7 +44,7 @@ def printAnalysis(data_name, initial, final, tradeAnalyzer, drawDownAnalyzer, my
     Function to print the Technical Analysis results in a nice format.
     '''
 
-    f = open ('./resultados/resultados_' + file_name + '.txt','a')
+    f = open ('../resultados/resultados_' + file_name + '.txt','a')
     f.write(data_name)
     f.write("\n\n")
 
@@ -135,10 +135,10 @@ def plot_simulation(cerebro, file_name):
 
     #plt.show()
 
-    if not os.path.exists('img/simulacion_' + file_name):
-        os.makedirs('img/simulacion_' + file_name)
+    if not os.path.exists('../img/simulacion_' + file_name):
+        os.makedirs('../img/simulacion_' + file_name)
 
-    plt.savefig('img/simulacion_' + file_name + '/' + data_name + '_' + file_name + '.png')
+    plt.savefig('../img/simulacion_' + file_name + '/' + data_name + '_' + file_name + '.png')
 
 
 def plot_capital(strategy_list, data_name):
@@ -153,10 +153,10 @@ def plot_capital(strategy_list, data_name):
     ax.legend(loc='upper left')
     ax.yaxis.grid(linestyle="-")
 
-    if not os.path.exists('img/ganancias/'):
-        os.makedirs('img/ganancias/')
+    if not os.path.exists('../img/ganancias/'):
+        os.makedirs('../img/ganancias/')
 
-    plt.savefig('img/ganancias/' + data_name + '.png')
+    plt.savefig('../img/ganancias/' + data_name + '.png')
 
 
 def execute_neural_network_strategy(df, gain, loss, n_day , comm, data_name, s_train, e_train, s_test, e_test):
@@ -274,12 +274,13 @@ def execute_pso_strategy(df, commission, data_name, s_train, e_train, s_test, e_
     #min_bound = -max_bound
     min_bound = np.zeros(dimensions)
     bounds = (min_bound, max_bound)
+    iters = 100
 
     # Call instance of PSO
     optimizer = ps.single.GlobalBestPSO(n_particles=n_particles, dimensions=dimensions, options=options, bounds=bounds)
 
     # Perform optimization
-    best_cost, best_pos = optimizer.optimize(gen_representation.cost_function, iters=10)
+    best_cost, best_pos = optimizer.optimize(gen_representation.cost_function, iters=iters)
 
     PSO_Strategy = strategies.CombinedSignalStrategy
     PSO_Strategy.w = best_pos/np.sum(best_pos)
@@ -294,6 +295,9 @@ def execute_pso_strategy(df, commission, data_name, s_train, e_train, s_test, e_
 
     PSO_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(PSO_Strategy, df_test, commission)
 
+    # Guardamos los resultados
+    printAnalysis(data_name, initial_value, final_value, ta, dd, ma, 'particle_swarm_optimization')
+    # Guardamos la grafica de la simulacion
     plot_simulation(PSO_Cerebro, 'particle_swarm_optimization')
 
     return PSO_Cerebro, PSO_Strategy
@@ -309,11 +313,9 @@ if __name__ == '__main__':
         print("Modo de uso 2: python main.py data_name gain loss n_day epochs")
         exit()
 
-
     # Obtenemos el nombre de la base de datos
     data_name = sys.argv[1]
     print(data_name, "\n")
-
 
     # ------- Fijamos parametros ------- #
 
@@ -330,29 +332,29 @@ if __name__ == '__main__':
         n_day = int(sys.argv[4])
         epochs = int(sys.argv[5])
 
-
     # ------------ Obtenemos los datos ------------ #
 
     df = func_utils.getData(data_name)
 
-    #s_train, e_train = '2009-12-22', '2011-12-21'
-    #s_test, e_test = '2011-12-22', '2013-12-22'
+    s_train, e_train = '2009-12-22', '2011-12-21'
+    s_test, e_test = '2011-12-22', '2013-12-22'
 
-    s_train, e_train = '2012-08-01', '2014-08-01'
-    s_test, e_test = '2014-08-01', '2016-08-01'
+    #s_train_genetic = '2011-08-01'
+    #s_train, e_train = '2012-08-01', '2014-08-01'
+    #s_test, e_test = '2014-08-01', '2016-08-01'
 
     #s_train, e_train = '2015-06-01', '2017-06-01'
     #s_test, e_test = '2017-06-01', '2019-06-01'
 
-    NN_Cerebro, NN_Strategy = execute_neural_network_strategy(df, gain, loss, n_day, commission, data_name, s_train, e_train, s_test, e_test)
     BH_Cerebro, BH_Strategy = execute_buy_and_hold_strategy(df, commission, data_name, s_test, e_test)
     Classic_Cerebro, Classic_Strategy = execute_classic_strategy(df, commission, data_name, s_test, e_test)
+    NN_Cerebro, NN_Strategy = execute_neural_network_strategy(df, gain, loss, n_day, commission, data_name, s_train, e_train, s_test, e_test)
     PSO_Cerebro, PSO_Strategy = execute_pso_strategy(df, commission, data_name, s_train, e_train, s_test, e_test)
 
     strategy_list = []
-    strategy_list.append((NN_Strategy, 'Red Neuronal'))
     strategy_list.append((BH_Strategy, 'Comprar y Mantener'))
     strategy_list.append((Classic_Strategy, 'Estrategia Clásica'))
+    strategy_list.append((NN_Strategy, 'Red Neuronal'))
     strategy_list.append((PSO_Strategy, 'Particle Swarm Optimization'))
 
     plot_capital(strategy_list, data_name)

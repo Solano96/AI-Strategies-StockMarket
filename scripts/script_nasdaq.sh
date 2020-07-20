@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd src
+
 python3 main.py AAPL 0.07 0.03 10 300
 python3 main.py ADBE 0.1 0.05 20 300
 python3 main.py ADP 0.07 0.03 10 300

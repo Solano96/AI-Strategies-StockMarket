@@ -8,3 +8,4 @@ backtrader==1.9.74.123
 mpl_finance==0.10.0
 numpy==1.16.4
 matplotlib==2.2.4
+pyswarms==1.1.0

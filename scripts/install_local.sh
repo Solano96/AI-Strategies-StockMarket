@@ -35,6 +35,7 @@ pip install -r requirements.txt --upgrade --force-reinstall
 # Create folder
 mkdir resultados
 mkdir data
+mkdir img
 
 # deactivate virtual env
 deactivate
