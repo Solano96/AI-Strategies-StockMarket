@@ -8,6 +8,7 @@ from numpy.random import seed
 
 
 class BuyAndHoldStrategy(bt.Strategy):
+
     ''' Esta clase define una estrategia de compra venta '''
 
     dates = []
@@ -15,7 +16,7 @@ class BuyAndHoldStrategy(bt.Strategy):
     closes = []
 
     def __init__(self):
-        ''' Inicializador de la clase TestStrategy '''
+        ''' Inicializador de la clase BuyAndHoldStrategy '''
         self.dataclose = self.datas[0].close
 
     def next(self):
@@ -85,6 +86,7 @@ class NeuralNetworkStrategy(bt.Strategy):
         self.dataclose = self.datas[0].close
         self.day_position = 0
 
+
     def next(self):
 
         self.values.append(self.broker.getvalue())
@@ -113,3 +115,52 @@ class NeuralNetworkStrategy(bt.Strategy):
         if len(self) >= self.n_day:
             self.model.update_memory(self.X_test[len(self)-self.n_day], self.y_test[len(self)-self.n_day])
             self.model.reTrain()
+
+
+class CombinedSignalStrategy(bt.Strategy):
+    ''' Esta clase define una estrategia de compra venta basada en la combinacion de medias moviles '''
+
+    dates = []
+    values = []
+    closes = []
+    w = None
+    period_list = []
+    moving_average_rules = []
+    moving_averages = {}
+
+    def __init__(self):
+        ''' Inicializador de la clase CombinedSignalStrategy '''
+        self.dataclose = self.datas[0].close
+
+
+    def next(self):
+
+        self.values.append(self.broker.getvalue())
+        self.dates.append(self.data.datetime.date())
+        self.closes.append(self.dataclose[0])
+
+        signal_list = []
+
+        for short_period, long_period in self.moving_average_rules:
+            moving_average_short = self.moving_averages['MA_' + str(short_period)][len(self)-1]
+            moving_average_long = self.moving_averages['MA_' + str(long_period)][len(self)-1]
+
+            if moving_average_short < moving_average_long:
+                signal_list.append(-1)
+            else:
+                signal_list.append(+1)
+
+        final_signal = 0
+
+        for w_i, s_i in zip(self.w, signal_list):
+            final_signal += w_i*s_i
+
+        # Realizar operacion
+        if not self.position:
+            if final_signal > 0.2:
+                buy_size = self.broker.get_cash() / self.datas[0].open
+                self.buy(size = buy_size)
+        else:
+            if final_signal < 0.2:
+                sell_size = self.broker.getposition(data = self.datas[0]).size
+                self.sell(size = sell_size)
