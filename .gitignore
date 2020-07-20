@@ -11,8 +11,7 @@ venv
 # Specific things
 resultados
 data
-img/simulacion_*
-img/ganancias
+img
 app.desktop
 report.log
 
