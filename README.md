@@ -5,12 +5,12 @@ App to test strategies based on artificial intelligence for investing in the sto
 The program has two simple investment strategies to compare results. One of these strategies is simply to buy and hold. The other is a classic strategy based on the crossing of Moving Averages and the use of the Relative Strength Index or RSI.
 
 At this moment the app has the following strategies based on artificial intelligence:
-* Strategy that tries to predict the market trend with the use of neural networks that take different technical indicators as inputs.
+* [Predict trend with Neural Networks](https://github.com/Solano96/AI-Strategies-StockMarket/blob/master/docs/neural_network.md)
 * Strategy that combines in a weighted way buy-sell signals coming from moving average crosses. The weights are obtained through the PSO (Particle swarm optimization) algorithm.
 
 ## Getting Started 🚀
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. 
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Prerequisites 📋
 
