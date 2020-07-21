@@ -7,7 +7,6 @@ import backtrader as bt
 from numpy.random import seed
 
 
-
 class BuyAndHoldStrategy(bt.Strategy):
     """ Buy and Hold Strategy """
 
@@ -127,6 +126,7 @@ class NeuralNetworkStrategy(bt.Strategy):
             self.model.reTrain()
 
 
+
 class CombinedSignalStrategy(bt.Strategy):
     """
     This class defines a buy-sell strategy based on the combination of moving averages,
@@ -166,7 +166,7 @@ class CombinedSignalStrategy(bt.Strategy):
 
         final_signal = 0
 
-        # Get signal from the weighted sum of all signals
+        # Get a unique signal from the weighted sum of all signals
         for w_i, s_i in zip(self.w, signal_list):
             final_signal += w_i*s_i
 
