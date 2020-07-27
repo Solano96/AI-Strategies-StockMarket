@@ -136,7 +136,9 @@ class CombinedSignalStrategy(bt.Strategy):
     dates = []
     values = []
     closes = []
-    w = None
+    w = []
+    buy_threshold = None
+    sell_threshold = None
     period_list = []
     moving_average_rules = []
     moving_averages = {}
@@ -170,13 +172,13 @@ class CombinedSignalStrategy(bt.Strategy):
         for w_i, s_i in zip(self.w, signal_list):
             final_signal += w_i*s_i
 
-        # Buy if signal is greater than 0.2
-        if not self.position and final_signal > 0.2:
+        # Buy if signal is greater than buy threshold
+        if not self.position and final_signal > self.buy_threshold:
             # Get number of shares to buy
             buy_size = self.broker.get_cash() / self.datas[0].open
             self.buy(size = buy_size)
 
-        # Sell if singal is smaller than -0.2
-        elif self.position and final_signal < -0.2:
+        # Sell if singal is smaller than sell threshold
+        elif self.position and final_signal < self.sell_threshold:
             sell_size = self.broker.getposition(data = self.datas[0]).size
             self.sell(size = sell_size)

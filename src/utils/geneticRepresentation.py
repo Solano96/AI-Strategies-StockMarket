@@ -58,8 +58,12 @@ class GeneticRepresentation():
             sell_day_list = []
 
             #w = np.exp(alpha)/np.sum(np.exp(alpha))
-            w = alpha/np.sum(alpha)
+            #w = alpha/np.sum(alpha)
             #w = alpha
+
+            w = np.exp(alpha[:len(alpha)-2])/np.sum(np.exp(alpha[:len(alpha)-2]))
+            buy_threshold = alpha[len(alpha)-2]
+            sell_threshold = alpha[len(alpha)-1]
 
             for i in range(size):
 
@@ -85,11 +89,11 @@ class GeneticRepresentation():
                     for w_i, s_i in zip(w, signal_list):
                         final_signal += w_i*s_i
 
-                    if final_signal > 0.2 and not in_market:
+                    if final_signal > buy_threshold and not in_market:
                         in_market = True
                         buy_day_list.append(i)
 
-                    elif final_signal < -0.2 and in_market:
+                    elif final_signal < sell_threshold and in_market:
                         in_market = False
                         sell_day_list.append(i)
 

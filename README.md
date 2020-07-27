@@ -51,18 +51,25 @@ First we need to activate the virtual environment with:
 
 ```bash
 . venv/bin/activate
+cd src
 ```
 
 You can use the command line program, that can be execute as follow:
 
 ```
-python3 main.py <data-name> <gain> <loss> <simulation days> <training-epochs>
+python3 main.py --strategy <strategy-name> --quote <quote-name>
+```
+
+You can also use the short options:
+
+```
+python3 main.py -s <strategy-name> -q <quote-name>
 ```
 
 Example:
 
 ```
-python3 main.py SAN 0.07 0.03 20 300
+python3 main.py --strategy neural-network --quote AAPL7
 ```
 
 PD: You can use as data name any market abbreviation recognized by yahoo finance.
