@@ -1,5 +1,6 @@
 import numpy as np
 import utils.indicators as indicators
+import utils.func_utils as func_utils
 
 
 class GeneticRepresentation():
@@ -61,9 +62,7 @@ class GeneticRepresentation():
             #w = alpha/np.sum(alpha)
             #w = alpha
 
-            w = np.exp(alpha[:len(alpha)-2])/np.sum(np.exp(alpha[:len(alpha)-2]))
-            buy_threshold = alpha[len(alpha)-2]
-            sell_threshold = alpha[len(alpha)-1]
+            w, buy_threshold, sell_threshold = func_utils.get_split_w_threshold(alpha)
 
             for i in range(size):
 

@@ -169,3 +169,11 @@ def split_df_date(df, start_train_date, end_train_date, start_test_date, end_tes
     y_train, y_test = y[0:train_size], y[len(X)-test_size:len(X)]
 
     return df_train, df_test, X_train, X_test, y_train, y_test
+
+
+def get_split_w_threshold(alpha):
+    w = np.exp(alpha[:len(alpha)-2])/np.sum(np.exp(alpha[:len(alpha)-2]))
+    buy_threshold = alpha[len(alpha)-2]
+    sell_threshold = alpha[len(alpha)-1]
+
+    return w, buy_threshold, sell_threshold

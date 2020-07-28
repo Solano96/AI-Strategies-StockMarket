@@ -124,7 +124,7 @@ def execute_strategy(strategy, df, commission):
     return cerebro, initial_value, final_value, ta, dd, ma
 
 
-def plot_simulation(cerebro, file_name, data_name):
+def plot_simulation(cerebro, file_name, data_name, from_date, to_date):
 
     cerebro.getFig(iplot=False)
 
@@ -138,7 +138,7 @@ def plot_simulation(cerebro, file_name, data_name):
     if not os.path.exists('../img/simulacion_' + file_name):
         os.makedirs('../img/simulacion_' + file_name)
 
-    plt.savefig('../img/simulacion_' + file_name + '/' + data_name + '_' + file_name + '.png')
+    plt.savefig('../img/simulacion_' + file_name + '/' + data_name + '_' + from_date + '_' + to_date + '_' + file_name + '.png')
 
 
 def plot_capital(strategy_list, data_name, img_name, from_date, to_date):
@@ -211,7 +211,7 @@ def execute_neural_network_strategy(df, options, comm, data_name, s_train, e_tra
     # Initialize neural network memory
     neural_network.init_memory(X_train[len(X_train)-15:len(X_train)], y_train[len(y_train)-15:len(y_train)])
 
-    # Create an instance from NeuralNetworkStrategy class
+    # Create an instance from NeuralNetworkStrategy class and assign parameters
     NN_Strategy = strategies.NeuralNetworkStrategy
     NN_Strategy.X_test = X_test
     NN_Strategy.y_test = y_test
@@ -223,7 +223,7 @@ def execute_neural_network_strategy(df, options, comm, data_name, s_train, e_tra
     # Save results
     printAnalysis(data_name, initial_value, final_value, ta, dd, ma, 'red_neuronal', train_accuracy, test_accuracy)
     # Save simulation chart
-    plot_simulation(NN_Cerebro, 'red_neuronal', data_name)
+    plot_simulation(NN_Cerebro, 'red_neuronal', data_name, s_test, e_test)
 
     return NN_Cerebro, NN_Strategy
 
@@ -240,7 +240,7 @@ def execute_buy_and_hold_strategy(df, commission, data_name, start_date, end_dat
     # Save results
     printAnalysis(data_name, initial_value, final_value, ta, dd, ma, 'comprar_y_mantener')
     # Save simulation chart
-    plot_simulation(BH_Cerebro, 'comprar_y_mantener', data_name)
+    plot_simulation(BH_Cerebro, 'comprar_y_mantener', data_name, start_date, end_date)
 
     return BH_Cerebro, BH_Strategy
 
@@ -257,7 +257,7 @@ def execute_classic_strategy(df, commission, data_name, start_date, end_date):
     # Save results
     printAnalysis(data_name, initial_value, final_value, ta, dd, ma, 'estrategia_clasica')
     # Save simulation chart
-    plot_simulation(Classic_Cerebro, 'estrategia_clasica', data_name)
+    plot_simulation(Classic_Cerebro, 'estrategia_clasica', data_name, start_date, end_date)
 
     return Classic_Cerebro, Classic_Strategy
 
@@ -280,7 +280,6 @@ def execute_pso_strategy(df, commission, data_name, s_train, e_train, s_test, e_
     min_bound = -max_bound
     max_bound = np.append(max_bound, [1.0, 0.0])
     min_bound = np.append(min_bound, [0.0, -1.0])
-    #min_bound = np.zeros(dimensions)
     bounds = (min_bound, max_bound)
     iters = 100
 
@@ -290,10 +289,12 @@ def execute_pso_strategy(df, commission, data_name, s_train, e_train, s_test, e_
     # Perform optimization
     best_cost, best_pos = optimizer.optimize(gen_representation.cost_function, iters=iters)
 
+    # Create an instance from CombinedSignalStrategy class and assign parameters
     PSO_Strategy = strategies.CombinedSignalStrategy
-    #PSO_Strategy.w = best_pos/np.sum(best_pos)
-    PSO_Strategy.w = np.exp(best_pos)/np.sum(np.exp(best_pos))
-    #PSO_Strategy.w = best_pos
+    w, buy_threshold, sell_threshold = func_utils.get_split_w_threshold(best_pos)
+    PSO_Strategy.w = w
+    PSO_Strategy.buy_threshold = buy_threshold
+    PSO_Strategy.sell_threshold = sell_threshold
     PSO_Strategy.period_list = gen_representation.period_list
     PSO_Strategy.moving_average_rules = gen_representation.moving_average_rules
     PSO_Strategy.moving_averages = gen_representation.moving_averages_test
@@ -306,7 +307,7 @@ def execute_pso_strategy(df, commission, data_name, s_train, e_train, s_test, e_
     # Guardamos los resultados
     printAnalysis(data_name, initial_value, final_value, ta, dd, ma, 'particle_swarm_optimization')
     # Guardamos la grafica de la simulacion
-    plot_simulation(PSO_Cerebro, 'particle_swarm_optimization', data_name)
+    plot_simulation(PSO_Cerebro, 'particle_swarm_optimization', data_name, s_test, e_test)
 
     return PSO_Cerebro, PSO_Strategy
 
@@ -326,36 +327,54 @@ def main(argv):
     }
 
     try:
-        opts, args = getopt.getopt(argv, 's:q:', ['strategy=', 'quote='])
+        opts, args = getopt.getopt(argv, 'hs:q:f:t:', ['help', 'strategy=', 'quote=', 'from-date=', 'to-date='])
     except getopt.GetoptError:
-        print('main.py -s <strategy> -q <quote>')
+        print('main.py -s <strategy> -q <quote> -f <from-date> -t <to-date>')
         sys.exit(2)
 
-    print(opts)
-
     for opt, arg in opts:
-        if opt == '-h':
-            print('main.py -s <strategy> -q <quote>')
+        if opt in ('-h', '--help'):
+            print('\nDESCRIPTION')
+            print('\n\tThis app allow you to test different strategies for investing in the stock market.')
+            print('\nUSAGE')
+            print('\n\tmain.py -s <strategy> -q <quote>')
+            print('\nOPTIONS')
+            print('\n\t-s, --strategy\tSelect a strategy between: buy-and-hold | classic | neural-network | combined-signal-pso | all.')
+            print('\n\t-q, --quote\tUse as quote any market abbreviation recognized by yahoo finance. Examples: AAPL | FB | GOOGL | AMZN | ...')
+            print('\n\t-f, --from-date\tStart date in simulation.')
+            print('\n\t-t, --to-date\tEnd date in simulation.')
+            print('\n\t-h, --help\tDisplay help.')
             sys.exit()
         elif opt in ("-s", "--strategy"):
             strategy = arg
         elif opt in ("-q", "--quote"):
             quote = arg
+        elif opt in ("-f", "--from-date"):
+            s_test = arg
+        elif opt in ("-t", "--to-date"):
+            e_test = arg
 
     df = func_utils.getData(quote)
 
     strategy_list = []
 
+    # Execute buy and hold strategy
     if strategy in ('buy-and-hold', 'all'):
         BH_Cerebro, BH_Strategy = execute_buy_and_hold_strategy(df, commission, quote, s_test, e_test)
         strategy_list.append((BH_Strategy, 'Comprar y Mantener'))
+
+    # Execute classic strategy
     if strategy in ('classic', 'all'):
         Classic_Cerebro, Classic_Strategy = execute_classic_strategy(df, commission, quote, s_test, e_test)
         strategy_list.append((Classic_Strategy, 'Estrategia Clásica'))
+
+    # Execute neural network strategy
     if strategy in ('neural-network', 'all'):
         options = {'gain': 0.07, 'loss': 0.03, 'n_day': 10, 'epochs': 300}
         NN_Cerebro, NN_Strategy = execute_neural_network_strategy(df, options, commission, quote, s_train, e_train, s_test, e_test)
         strategy_list.append((NN_Strategy, 'Red Neuronal'))
+
+    # Execute combined signal strategy optimized with pso
     if strategy in ('combined-signal-pso', 'all'):
         PSO_Cerebro, PSO_Strategy = execute_pso_strategy(df, commission, quote, s_train, e_train, s_test, e_test)
         strategy_list.append((PSO_Strategy, 'Particle Swarm Optimization'))
