@@ -5,6 +5,7 @@ import datetime
 
 import backtrader as bt
 from numpy.random import seed
+import utils.func_utils as func_utils
 
 
 class BuyAndHoldStrategy(bt.Strategy):
@@ -154,23 +155,7 @@ class CombinedSignalStrategy(bt.Strategy):
         self.dates.append(self.data.datetime.date())
         self.closes.append(self.dataclose[0])
 
-        signal_list = []
-
-        # Get signals from all moving averages rules
-        for short_period, long_period in self.moving_average_rules:
-            moving_average_short = self.moving_averages['MA_' + str(short_period)][len(self)-1]
-            moving_average_long = self.moving_averages['MA_' + str(long_period)][len(self)-1]
-
-            if moving_average_short < moving_average_long:
-                signal_list.append(-1)
-            else:
-                signal_list.append(+1)
-
-        final_signal = 0
-
-        # Get a unique signal from the weighted sum of all signals
-        for w_i, s_i in zip(self.w, signal_list):
-            final_signal += w_i*s_i
+        final_signal = func_utils.get_combined_signal(self.moving_average_rules, self.moving_averages, self.w, len(self)-1)
 
         # Buy if signal is greater than buy threshold
         if not self.position and final_signal > self.buy_threshold:

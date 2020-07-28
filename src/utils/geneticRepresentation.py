@@ -58,10 +58,6 @@ class GeneticRepresentation():
             buy_day_list = []
             sell_day_list = []
 
-            #w = np.exp(alpha)/np.sum(np.exp(alpha))
-            #w = alpha/np.sum(alpha)
-            #w = alpha
-
             w, buy_threshold, sell_threshold = func_utils.get_split_w_threshold(alpha)
 
             for i in range(size):
@@ -70,23 +66,8 @@ class GeneticRepresentation():
                     sell_day_list.append(i)
 
                 elif i < size-1:
-                    signal_list = []
 
-                    # Get signals from all moving averages rules
-                    for short_period, long_period in self.moving_average_rules:
-                        moving_average_short = self.moving_averages_train['MA_' + str(short_period)][i]
-                        moving_average_long = self.moving_averages_train['MA_' + str(long_period)][i]
-
-                        if moving_average_short < moving_average_long:
-                            signal_list.append(-1)
-                        else:
-                            signal_list.append(+1)
-
-                    final_signal = 0
-
-                    # Get a unique signal from the weighted sum of all signals
-                    for w_i, s_i in zip(w, signal_list):
-                        final_signal += w_i*s_i
+                    final_signal = func_utils.get_combined_signal(self.moving_average_rules, self.moving_averages_train, w, i)
 
                     if final_signal > buy_threshold and not in_market:
                         in_market = True

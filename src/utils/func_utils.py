@@ -29,7 +29,6 @@ def getData(data_name):
         from_date = '2000-01-01'
         today = datetime.datetime.now()
         today = today.strftime('%Y-%m-%d')
-        today = '2019-05-09'
 
         df = yf.download(data_name, from_date, today)
         df = df[['Open','High', 'Low', 'Close', 'Volume']]
@@ -99,7 +98,6 @@ def add_features(df):
     return df
 
 
-
 def add_label(df, gain, loss ,n_day, commission):
     """
     Add a label to each day of the dataframe
@@ -110,7 +108,7 @@ def add_label(df, gain, loss ,n_day, commission):
     :param loss: loss limit
     :param n_day: number of days of the simulation
     :param commission: commission considerated for the simulation
-    :return:
+    :return: dataframe with labels added
     """
 
     print('Añadiendo etiquetas...')
@@ -138,6 +136,12 @@ def add_label(df, gain, loss ,n_day, commission):
     return df
 
 def encode_to_categorical(y):
+    """
+    Convert to categorical
+    :param y: vector to encode to categorical
+    :return: vector of categorical features
+    """
+
     encoder = LabelEncoder()
     encoder.fit(y)
     encoded_y = encoder.transform(y)
@@ -146,10 +150,13 @@ def encode_to_categorical(y):
     return y
 
 def split_df_date(df, start_train_date, end_train_date, start_test_date, end_test_date):
-    '''
-    Esta función separa los datos en train y test dividiendo el conjunto entre las fechas dadas
-    A su vez divide los conjuntos obtenidos en caracteristicas 'X' y etiquetas 'y'
-    '''
+    """
+    Split dataframe in train and test from given dates
+    :param df: dataframe with market data
+    :param start_train_date: start date of the training dataset
+    :param end_train_date: end date of the training dataset
+    :return: train and test datasets
+    """
 
     start_date = datetime.datetime.strptime(str(df.index.date[0]), '%Y-%m-%d')
     end_date = datetime.datetime.strptime(str(df.index.date[len(df.index)-1]), '%Y-%m-%d')
@@ -172,8 +179,43 @@ def split_df_date(df, start_train_date, end_train_date, start_test_date, end_tes
 
 
 def get_split_w_threshold(alpha):
+    """
+    Get normalize weights and thresholds from alpha vector
+    :param alpha: optimize Vectorize
+    :return: weights and thresholds
+    """
     w = np.exp(alpha[:len(alpha)-2])/np.sum(np.exp(alpha[:len(alpha)-2]))
     buy_threshold = alpha[len(alpha)-2]
     sell_threshold = alpha[len(alpha)-1]
 
     return w, buy_threshold, sell_threshold
+
+
+def get_combined_signal(moving_average_rules, moving_averages, w, index):
+    """
+    Combines in a weighted way buy-sell signals coming from moving average crosses.
+    :param moving_average_rules: list with moving average rules
+    :param moving_averages: dict with moving averages from historical data
+    :param w: weights vector
+    :parm index: moving averages index
+    :return: final signal get from combined all signals
+    """
+    signal_list = []
+
+    # Get signals from all moving averages rules
+    for short_period, long_period in moving_average_rules:
+        moving_average_short = moving_averages['MA_' + str(short_period)][index]
+        moving_average_long = moving_averages['MA_' + str(long_period)][index]
+
+        if moving_average_short < moving_average_long:
+            signal_list.append(-1)
+        else:
+            signal_list.append(+1)
+
+    final_signal = 0
+
+    # Get a unique signal from the weighted sum of all signals
+    for w_i, s_i in zip(w, signal_list):
+        final_signal += w_i*s_i
+
+    return final_signal
