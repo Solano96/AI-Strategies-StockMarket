@@ -10,7 +10,7 @@ At this moment the app has the following strategies based on artificial intellig
 
 ## Getting Started 🚀
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. The local installation has been successfully tested in Ubuntu 18.04.
 
 ### Prerequisites 📋
 
@@ -57,13 +57,13 @@ cd src
 You can use the command line program, that can be execute as follow:
 
 ```
-python3 main.py --strategy <strategy-name> --quote <quote-name>
+python3 main.py --strategy <strategy-name> --quote <quote-name> --from-date <from> --to-date <to>
 ```
 
 You can also use the short options:
 
 ```
-python3 main.py -s <strategy-name> -q <quote-name>
+python3 main.py -s <strategy-name> -q <quote-name> -f <from> -t <to>
 ```
 
 Example:
