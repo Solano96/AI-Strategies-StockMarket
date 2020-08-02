@@ -55,22 +55,35 @@ def print_execution_name(execution_name):
 
 
 def execute_strategy(strategy, df, commission):
-    # Creamos la instancia cerebro
-    cerebro = myCerebro.MyCerebro()
+    """
+    Execute strategy on data history contained in df
+    :param strategy: buying and selling strategy to be used
+    :param df: dataframe with historical data
+    :param commission: commission to be paid on each operation
+    :returns:
+        - cerebro - execution engine
+        - initial_value - initial value of the portfolio
+        - final_value - final value of the portfolio
+        - ta - trade analyzer instance
+        - dd - drawdown analyzer instance
+        - ma - myAnalyzer instance
+    """
 
-    # Añadimos la estrategia al cerebro
+    # Create cerebro instance
+    cerebro = myCerebro.MyCerebro()
+    # Add strategy to cerebro
     cerebro.addstrategy(strategy)
 
-    # Añadimos los datos al cerebro
+    # Feed cerebro with historical data
     data = bt.feeds.PandasData(dataname = df)
     cerebro.adddata(data)
 
-    # Añadimos los analizadores
+    # Add analyzers to cerebro
     cerebro.addanalyzer(bt.analyzers.DrawDown, _name="drawDown")
     cerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name="tradeAnalyzer")
     cerebro.addanalyzer(myAnalyzer.MyAnalyzer, _name = "myAnalyzer")
 
-    # Fijamos el dinero inicial y la comisión
+    # Set initial cash and commision
     cerebro.broker.setcash(6000.0)
     cerebro.broker.setcommission(commission=commission)
 
@@ -78,14 +91,14 @@ def execute_strategy(strategy, df, commission):
 
     print('\nValor inicial de la cartera: %.2f' % initial_value)
 
-    # Ejecutamos la estrategia sobre los datos del test
+    # Execute cerebro
     strats = cerebro.run()
 
     final_value = cerebro.broker.getvalue()
 
     print('Valor final de la cartera  : %.2f' % final_value)
 
-    # print the analyzers
+    # Get analysis from analyzers
     dd = strats[0].analyzers.drawDown.get_analysis()
     ta = strats[0].analyzers.tradeAnalyzer.get_analysis()
     ma = strats[0].analyzers.myAnalyzer.get_analysis()
@@ -94,6 +107,17 @@ def execute_strategy(strategy, df, commission):
 
 
 def execute_buy_and_hold_strategy(df, commission, data_name, start_date, end_date):
+    """
+    Execute buy and hold strategy on data history contained in df
+    :param df: dataframe with historical data
+    :param commision: commission to be paid on each operation
+    :param data_name: quote data name
+    :param start_date: start date of simulation
+    :param end_date: end date of simulation
+    :return:
+        - BH_Cerebro - execution engine
+        - BH_Strategy - buy and hold strategy instance
+    """
 
     print_execution_name("Estrategia: comprar y mantener")
 
@@ -111,6 +135,17 @@ def execute_buy_and_hold_strategy(df, commission, data_name, start_date, end_dat
 
 
 def execute_classic_strategy(df, commission, data_name, start_date, end_date):
+    """
+    Execute classic strategy on data history contained in df
+    :param df: dataframe with historical data
+    :param commision: commission to be paid on each operation
+    :param data_name: quote data name
+    :param start_date: start date of simulation
+    :param end_date: end date of simulation
+    :return:
+        - Classic_Cerebro - execution engine
+        - Classic_Strategy - classic strategy instance
+    """
 
     print_execution_name("Estrategia: clásica")
 
@@ -127,11 +162,27 @@ def execute_classic_strategy(df, commission, data_name, start_date, end_date):
     return Classic_Cerebro, Classic_Strategy
 
 
-def execute_neural_network_strategy(df, options, comm, data_name, s_test, e_test):
+def execute_neural_network_strategy(df, options, commision, data_name, s_test, e_test):
+    """
+    Execute neural network strategy on data history contained in df
+    :param df: dataframe with historical data
+    :param options: dict with the following parameters
+        - gain - gain threshold in simulation of labelling
+        - loss - loss threshold simulation of labelling
+        - n_day - number of days in simulation of labelling
+        - epochs - number of epochs to train the neural network
+    :param commision: commission to be paid on each operation
+    :param data_name: quote data name
+    :param start_date: start date of simulation
+    :param end_date: end date of simulation
+    :return:
+        - NN_Cerebro - execution engine
+        - NN_Strategy - neural network strategy instance
+    """
 
     print_execution_name("Estrategia: red neuronal")
 
-    # ------------ Get parameters ------------#
+    # Get parameters
     gain = options['gain']
     loss = options['loss']
     n_day = options['n_day']
@@ -141,17 +192,14 @@ def execute_neural_network_strategy(df, options, comm, data_name, s_test, e_test
     s_train = s_test_date.replace(year = s_test_date.year - 2)
     e_train = s_test_date - timedelta(days=1)
 
-    # ------------ Preprocess dataset ------------ #
-
+    # Preprocess dataset
     df = func_utils.add_features(df)
     df = func_utils.add_label(df, gain = gain, loss = loss, n_day = n_day, commission = comm)
 
-    # ------------ Split train and test ------------ #
-
+    # Split train and test
     df_train, df_test, X_train, X_test, y_train, y_test = func_utils.split_df_date(df, s_train, e_train, s_test, e_test)
 
-    # ------------ Normalization ------------ #
-
+    # Normalization
     print("Normalizando datos...")
     sc = StandardScaler()
     X_train = sc.fit_transform(X_train)
@@ -161,16 +209,13 @@ def execute_neural_network_strategy(df, options, comm, data_name, s_test, e_test
     X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
     X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
 
-    # ------------ Get prediction model ------------ #
-
+    # Get prediction model
     print("Entrenando red neuronal...")
-
     neural_network = model.NeuralNetwork()
     neural_network.build_model(input_shape = (X_train.shape[1], 1))
     neural_network.train(X_train, y_train, epochs = epochs)
 
-    # ------------ Get accuraccy ------------ #
-
+    # Get accuraccy
     train_accuracy = neural_network.get_accuracy(X_train, y_train)
     test_accuracy = neural_network.get_accuracy(X_test, y_test)
 
@@ -191,7 +236,7 @@ def execute_neural_network_strategy(df, options, comm, data_name, s_test, e_test
     NN_Strategy.n_day = n_day
 
     # Execute strategy
-    NN_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(NN_Strategy, df_test, comm)
+    NN_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(NN_Strategy, df_test, commision)
     # Save results
     execution_analysis.printAnalysis('red_neuronal', data_name, initial_value, final_value, ta, dd, ma, train_accuracy, test_accuracy)
     # Save simulation chart
@@ -200,7 +245,22 @@ def execute_neural_network_strategy(df, options, comm, data_name, s_test, e_test
     return NN_Cerebro, NN_Strategy
 
 
-def execute_pso_strategy(df, commission, data_name, s_test, e_test):
+def execute_pso_strategy(df, options, commission, data_name, s_test, e_test):
+    """
+    Execute particle swarm optimization strategy on data history contained in df
+    :param df: dataframe with historical data
+    :param options: dict with the following parameters
+        - c1 - cognitive parameter with which the particle follows its personal best
+        - c2 - social parameter with which the particle follows the swarm's global best position
+        - w - parameter that controls the inertia of the swarm's movement
+    :param commision: commission to be paid on each operation
+    :param data_name: quote data name
+    :param start_date: start date of simulation
+    :param end_date: end date of simulation
+    :return:
+        - PSO_Cerebro - execution engine
+        - PSO_Strategy - pso strategy instance
+    """
 
     print_execution_name("Estrategia: particle swar optimization")
 
