@@ -44,15 +44,25 @@ class GeneticRepresentation():
             self.moving_averages_test[col_ma_name] = [self.df_test.iloc[i][col_ma_name] for i in range(len(self.df_test.index))]
 
 
-    def cost_function(self, x):
+    def cost_function(self, x, from_date, to_date):
         """ Cost function adapted to PSO algorithm """
+
+        df_evaluate = self.df[from_date:to_date]
+        df_closes = [df_evaluate.iloc[i]['Close'] for i in range(len(df_evaluate.index))]
+
+        moving_averages_evaluate = {}
+
+        # Vectorize columns and save in dict to fast access
+        for p in self.period_list:
+            col_ma_name = 'MA_' + str(p)
+            moving_averages_evaluate[col_ma_name] = [df_evaluate.iloc[i][col_ma_name] for i in range(len(df_evaluate.index))]
 
         # Get the number of particles of PSO
         num_particles = x.shape[0]
         final_prices = np.zeros([num_particles])
 
         for idx, alpha in enumerate(x):
-            size = len(self.df_closes)
+            size = len(df_closes)
             in_market = False
 
             buy_day_list = []
@@ -67,7 +77,7 @@ class GeneticRepresentation():
 
                 elif i < size-1:
 
-                    final_signal = func_utils.get_combined_signal(self.moving_average_rules, self.moving_averages_train, w, i)
+                    final_signal = func_utils.get_combined_signal(self.moving_average_rules, moving_averages_evaluate, w, i)
 
                     if final_signal > buy_threshold and not in_market:
                         in_market = True
@@ -84,7 +94,7 @@ class GeneticRepresentation():
 
             # Get the final capital after excute all trades
             for i in range(num_trades):
-                final_price *= (self.df_closes[sell_day_list[i]]*(1-commission)) / (self.df_closes[buy_day_list[i]]*(1+commission))
+                final_price *= (df_closes[sell_day_list[i]]*(1-commission)) / (df_closes[buy_day_list[i]]*(1+commission))
 
             final_prices[idx] = final_price
 

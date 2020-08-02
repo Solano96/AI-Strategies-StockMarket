@@ -6,6 +6,7 @@ import math
 # Just disables the warning, doesn't enable AVX/FMA
 import os
 import sys, getopt
+from datetime import datetime, timedelta
 
 from sklearn.preprocessing import StandardScaler
 
@@ -159,7 +160,41 @@ def plot_capital(strategy_list, data_name, img_name, from_date, to_date):
     plt.savefig('../img/ganancias/' + data_name + '_' + from_date + '_' + to_date + '_' + img_name + '.png')
 
 
-def execute_neural_network_strategy(df, options, comm, data_name, s_train, e_train, s_test, e_test):
+def execute_buy_and_hold_strategy(df, commission, data_name, start_date, end_date):
+
+    print("\n ############### Estrategia: comprar y mantener ############### \n")
+
+    df = df[start_date:end_date]
+
+    BH_Strategy =  strategies.BuyAndHoldStrategy
+    BH_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(BH_Strategy, df, commission)
+
+    # Save results
+    printAnalysis(data_name, initial_value, final_value, ta, dd, ma, 'comprar_y_mantener')
+    # Save simulation chart
+    plot_simulation(BH_Cerebro, 'comprar_y_mantener', data_name, start_date, end_date)
+
+    return BH_Cerebro, BH_Strategy
+
+
+def execute_classic_strategy(df, commission, data_name, start_date, end_date):
+
+    print("\n ############### Estrategia: clásica ############### \n")
+
+    df = df[start_date:end_date]
+
+    Classic_Strategy =  strategies.ClassicStrategy
+    Classic_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(Classic_Strategy, df, commission)
+
+    # Save results
+    printAnalysis(data_name, initial_value, final_value, ta, dd, ma, 'estrategia_clasica')
+    # Save simulation chart
+    plot_simulation(Classic_Cerebro, 'estrategia_clasica', data_name, start_date, end_date)
+
+    return Classic_Cerebro, Classic_Strategy
+
+
+def execute_neural_network_strategy(df, options, comm, data_name, s_test, e_test):
 
     print("\n ############### Estrategia: red neuronal ############### \n")
 
@@ -168,6 +203,10 @@ def execute_neural_network_strategy(df, options, comm, data_name, s_train, e_tra
     loss = options['loss']
     n_day = options['n_day']
     epochs = options['epochs']
+
+    s_test_date = datetime.strptime(s_test, '%Y-%m-%d')
+    s_train = s_test_date.replace(year = s_test_date.year - 2)
+    e_train = s_test_date - timedelta(days=1)
 
     # ------------ Preprocess dataset ------------ #
 
@@ -228,46 +267,15 @@ def execute_neural_network_strategy(df, options, comm, data_name, s_train, e_tra
     return NN_Cerebro, NN_Strategy
 
 
-def execute_buy_and_hold_strategy(df, commission, data_name, start_date, end_date):
-
-    print("\n ############### Estrategia: comprar y mantener ############### \n")
-
-    df = df[start_date:end_date]
-
-    BH_Strategy =  strategies.BuyAndHoldStrategy
-    BH_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(BH_Strategy, df, commission)
-
-    # Save results
-    printAnalysis(data_name, initial_value, final_value, ta, dd, ma, 'comprar_y_mantener')
-    # Save simulation chart
-    plot_simulation(BH_Cerebro, 'comprar_y_mantener', data_name, start_date, end_date)
-
-    return BH_Cerebro, BH_Strategy
-
-
-def execute_classic_strategy(df, commission, data_name, start_date, end_date):
-
-    print("\n ############### Estrategia: clásica ############### \n")
-
-    df = df[start_date:end_date]
-
-    Classic_Strategy =  strategies.ClassicStrategy
-    Classic_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(Classic_Strategy, df, commission)
-
-    # Save results
-    printAnalysis(data_name, initial_value, final_value, ta, dd, ma, 'estrategia_clasica')
-    # Save simulation chart
-    plot_simulation(Classic_Cerebro, 'estrategia_clasica', data_name, start_date, end_date)
-
-    return Classic_Cerebro, Classic_Strategy
-
-
-
-def execute_pso_strategy(df, commission, data_name, s_train, e_train, s_test, e_test):
+def execute_pso_strategy(df, commission, data_name, s_test, e_test):
 
     print("\n ############### Estrategia: particle swar optimization ############### \n")
 
     # ------------ Obtenemos los conjuntos de train y test ------------ #
+
+    s_test_date = datetime.strptime(s_test, '%Y-%m-%d')
+    s_train = s_test_date.replace(year = s_test_date.year - 2)
+    e_train = s_test_date - timedelta(days=1)
 
     gen_representation = geneticRepresentation.GeneticRepresentation(df, s_train, e_train, s_test, e_test)
 
@@ -287,7 +295,8 @@ def execute_pso_strategy(df, commission, data_name, s_train, e_train, s_test, e_
     optimizer = ps.single.GlobalBestPSO(n_particles=n_particles, dimensions=dimensions, options=options, bounds=bounds)
 
     # Perform optimization
-    best_cost, best_pos = optimizer.optimize(gen_representation.cost_function, iters=iters)
+    kwargs={'from_date': s_train, 'to_date': e_train}
+    best_cost, best_pos = optimizer.optimize(gen_representation.cost_function, iters=iters, **kwargs)
 
     # Create an instance from CombinedSignalStrategy class and assign parameters
     PSO_Strategy = strategies.CombinedSignalStrategy
@@ -298,6 +307,8 @@ def execute_pso_strategy(df, commission, data_name, s_train, e_train, s_test, e_
     PSO_Strategy.period_list = gen_representation.period_list
     PSO_Strategy.moving_average_rules = gen_representation.moving_average_rules
     PSO_Strategy.moving_averages = gen_representation.moving_averages_test
+    PSO_Strategy.optimizer = optimizer
+    PSO_Strategy.gen_representation = gen_representation
 
     df_test = gen_representation.df_test
     df_train = gen_representation.df_train
@@ -311,6 +322,7 @@ def execute_pso_strategy(df, commission, data_name, s_train, e_train, s_test, e_
 
     return PSO_Cerebro, PSO_Strategy
 
+
 def main(argv):
     strategy = ''
     quote = ''
@@ -319,15 +331,9 @@ def main(argv):
     s_train, e_train = '2009-12-22', '2011-12-21'
     s_test, e_test = '2011-12-22', '2013-12-22'
 
-    strategy_func_switcher = {
-        'buy-and-hold':   (execute_buy_and_hold_strategy, 'Comprar y Mantener'),
-        'classic':        (execute_classic_strategy, 'Estrategia Clásica'),
-        'neural-network': (execute_neural_network_strategy, 'Red Neuronal'),
-        'combined-pso':   (execute_pso_strategy, 'Particle Swarm Optimization')
-    }
-
     try:
-        opts, args = getopt.getopt(argv, 'hs:q:f:t:', ['help', 'strategy=', 'quote=', 'from-date=', 'to-date='])
+        opts, args = getopt.getopt(argv, 'hs:q:f:t:', ['help', 'strategy=', 'quote=', 'from-date=', 'to-date=',
+                                                               'nn-gain=', 'nn-loss=', 'nn-days=', 'nn-epochs='])
     except getopt.GetoptError:
         print('main.py -s <strategy> -q <quote> -f <from-date> -t <to-date>')
         sys.exit(2)
@@ -370,13 +376,25 @@ def main(argv):
 
     # Execute neural network strategy
     if strategy in ('neural-network', 'all'):
-        options = {'gain': 0.07, 'loss': 0.03, 'n_day': 10, 'epochs': 300}
-        NN_Cerebro, NN_Strategy = execute_neural_network_strategy(df, options, commission, quote, s_train, e_train, s_test, e_test)
+
+        options = {'gain': 0.07, 'loss': 0.05, 'n_day': 10, 'epochs': 300}
+
+        for opt, arg in opts:
+            if opt in ("--nn-gain"):
+                    options['gains'] = float(arg)
+            elif opt in ("--nn-loss"):
+                    options['loss'] = float(arg)
+            elif opt in ("--nn-days"):
+                    options['n_day'] = int(arg)
+            elif opt in ("--nn-epochs"):
+                    options['epochs'] = int(arg)
+
+        NN_Cerebro, NN_Strategy = execute_neural_network_strategy(df, options, commission, quote, s_test, e_test)
         strategy_list.append((NN_Strategy, 'Red Neuronal'))
 
     # Execute combined signal strategy optimized with pso
     if strategy in ('combined-signal-pso', 'all'):
-        PSO_Cerebro, PSO_Strategy = execute_pso_strategy(df, commission, quote, s_train, e_train, s_test, e_test)
+        PSO_Cerebro, PSO_Strategy = execute_pso_strategy(df, commission, quote, s_test, e_test)
         strategy_list.append((PSO_Strategy, 'Particle Swarm Optimization'))
 
     plot_capital(strategy_list, quote, strategy, s_test, e_test)
