@@ -5,39 +5,29 @@ import numpy as np
 import math
 # Just disables the warning, doesn't enable AVX/FMA
 import os
-import sys, getopt
-from datetime import datetime, timedelta
-
-
-import utils.func_utils as func_utils
-import utils.myCerebro as myCerebro
-import utils.myAnalyzer as myAnalyzer
-import utils.testStrategy as testStrategy
-import utils.strategies as strategies
+import sys
 
 import backtrader as bt
-import backtrader.plot
-import matplotlib
-import matplotlib.pyplot as plt
-
-from numpy.random import seed
 
 import warnings
 
 if not sys.warnoptions:
     warnings.simplefilter("ignore")
 
-seed(1)
-# Opciones de ejecucion
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-pd.options.mode.chained_assignment = None
-np.set_printoptions(threshold=sys.maxsize)
 
-
-def printAnalysis(data_name, initial, final, tradeAnalyzer, drawDownAnalyzer, myAnalyzer, file_name, train_accuracy=None, test_accuracy=None):
+def printAnalysis(file_name, data_name, initial_value, final_value, tradeAnalyzer, drawDownAnalyzer, myAnalyzer,
+                  train_accuracy=None, test_accuracy=None):
     '''
     Function to print the Technical Analysis results in a nice format.
+    :param file_name: file name to print the analysis
+    :param data_name: quote data name
+    :param initial_value: initial value of the portfolio
+    :param final_value: final value of the portfolio
+    :param tradeAnalyzer: trade analyzer instance
+    :param drawDownAnalyzer: drawdown analyzer instance
+    :param myAnalyzer: myAnalyzer instance
+    :param train_accuracy: train accuracy (optional)
+    :param test_accuracy: test accuracy (optional)
     '''
 
     f = open ('../resultados/resultados_' + file_name + '.txt','a')
@@ -48,13 +38,13 @@ def printAnalysis(data_name, initial, final, tradeAnalyzer, drawDownAnalyzer, my
         f.write("Train score : %.2f\n" % train_accuracy)
         f.write("Test score  : %.2f\n\n" % test_accuracy)
 
-    percentage_profit = (final-initial)/initial
+    percentage_profit = (final_value-initial_value)/initial_value
 
-    f.write("Inicial     : %.2f\n" % initial)
-    f.write("Final       : %.2f\n" % final)
+    f.write("Inicial     : %.2f\n" % initial_value)
+    f.write("Final       : %.2f\n" % final_value)
     f.write("Ganancia(%%) : %.2f\n" % percentage_profit)
 
-    net_profit = round(final-initial,2)
+    net_profit = round(final_value-initial_value,2)
     maxdd = round((-1.0)*drawDownAnalyzer.max.drawdown,2)
     trades_total = int(myAnalyzer.trades.total)
     trades_positives = int(myAnalyzer.trades.positives)

@@ -11,15 +11,22 @@ from datetime import datetime, timedelta
 from sklearn.preprocessing import StandardScaler
 
 import utils.func_utils as func_utils
-import utils.myCerebro as myCerebro
-import utils.myAnalyzer as myAnalyzer
-import utils.testStrategy as testStrategy
-import utils.model as model
-import utils.strategies as strategies
-import utils.geneticRepresentation as geneticRepresentation
 
+# Import classes
+import classes.myCerebro as myCerebro
+import classes.myAnalyzer as myAnalyzer
+import classes.model as model
+import classes.geneticRepresentation as geneticRepresentation
+
+# Import strategies execution
 import strategies_execution.execution_analysis as execution_analysis
 import strategies_execution.execution_plot as execution_plot
+
+# Import strategies
+from strategies.buy_and_hold_strategy import BuyAndHoldStrategy
+from strategies.classic_strategy import ClassicStrategy
+from strategies.neural_network_strategy import NeuralNetworkStrategy
+from strategies.combined_signal_strategy import CombinedSignalStrategy
 
 import pyswarms as ps
 
@@ -47,17 +54,56 @@ def print_execution_name(execution_name):
     print("\n --------------- ", execution_name, " --------------- \n")
 
 
+def execute_strategy(strategy, df, commission):
+    # Creamos la instancia cerebro
+    cerebro = myCerebro.MyCerebro()
+
+    # Añadimos la estrategia al cerebro
+    cerebro.addstrategy(strategy)
+
+    # Añadimos los datos al cerebro
+    data = bt.feeds.PandasData(dataname = df)
+    cerebro.adddata(data)
+
+    # Añadimos los analizadores
+    cerebro.addanalyzer(bt.analyzers.DrawDown, _name="drawDown")
+    cerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name="tradeAnalyzer")
+    cerebro.addanalyzer(myAnalyzer.MyAnalyzer, _name = "myAnalyzer")
+
+    # Fijamos el dinero inicial y la comisión
+    cerebro.broker.setcash(6000.0)
+    cerebro.broker.setcommission(commission=commission)
+
+    initial_value = cerebro.broker.getvalue()
+
+    print('\nValor inicial de la cartera: %.2f' % initial_value)
+
+    # Ejecutamos la estrategia sobre los datos del test
+    strats = cerebro.run()
+
+    final_value = cerebro.broker.getvalue()
+
+    print('Valor final de la cartera  : %.2f' % final_value)
+
+    # print the analyzers
+    dd = strats[0].analyzers.drawDown.get_analysis()
+    ta = strats[0].analyzers.tradeAnalyzer.get_analysis()
+    ma = strats[0].analyzers.myAnalyzer.get_analysis()
+
+    return cerebro, initial_value, final_value, ta, dd, ma
+
+
 def execute_buy_and_hold_strategy(df, commission, data_name, start_date, end_date):
 
     print_execution_name("Estrategia: comprar y mantener")
 
     df = df[start_date:end_date]
 
-    BH_Strategy =  strategies.BuyAndHoldStrategy
+    BH_Strategy =  BuyAndHoldStrategy
     BH_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(BH_Strategy, df, commission)
 
     # Save results
-    execution_analysis.printAnalysis(data_name, initial_value, final_value, ta, dd, ma, 'comprar_y_mantener')
+    execution_analysis.printAnalysis('comprar_y_mantener', data_name, initial_value, final_value, ta, dd, ma)
     # Save simulation chart
     execution_plot.plot_simulation(BH_Cerebro, 'comprar_y_mantener', data_name, start_date, end_date)
 
@@ -70,11 +116,11 @@ def execute_classic_strategy(df, commission, data_name, start_date, end_date):
 
     df = df[start_date:end_date]
 
-    Classic_Strategy =  strategies.ClassicStrategy
+    Classic_Strategy =  ClassicStrategy
     Classic_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(Classic_Strategy, df, commission)
 
     # Save results
-    execution_analysis.printAnalysis(data_name, initial_value, final_value, ta, dd, ma, 'estrategia_clasica')
+    execution_analysis.printAnalysis('estrategia_clasica', data_name, initial_value, final_value, ta, dd, ma)
     # Save simulation chart
     execution_plot.plot_simulation(Classic_Cerebro, 'estrategia_clasica', data_name, start_date, end_date)
 
@@ -138,7 +184,7 @@ def execute_neural_network_strategy(df, options, comm, data_name, s_test, e_test
     neural_network.init_memory(X_train[len(X_train)-15:len(X_train)], y_train[len(y_train)-15:len(y_train)])
 
     # Create an instance from NeuralNetworkStrategy class and assign parameters
-    NN_Strategy = strategies.NeuralNetworkStrategy
+    NN_Strategy = NeuralNetworkStrategy
     NN_Strategy.X_test = X_test
     NN_Strategy.y_test = y_test
     NN_Strategy.model = neural_network
@@ -147,7 +193,7 @@ def execute_neural_network_strategy(df, options, comm, data_name, s_test, e_test
     # Execute strategy
     NN_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(NN_Strategy, df_test, comm)
     # Save results
-    execution_analysis.printAnalysis(data_name, initial_value, final_value, ta, dd, ma, 'red_neuronal', train_accuracy, test_accuracy)
+    execution_analysis.printAnalysis('red_neuronal', data_name, initial_value, final_value, ta, dd, ma, train_accuracy, test_accuracy)
     # Save simulation chart
     execution_plot.plot_simulation(NN_Cerebro, 'red_neuronal', data_name, s_test, e_test)
 
@@ -186,7 +232,7 @@ def execute_pso_strategy(df, commission, data_name, s_test, e_test):
     best_cost, best_pos = optimizer.optimize(gen_representation.cost_function, iters=iters, **kwargs)
 
     # Create an instance from CombinedSignalStrategy class and assign parameters
-    PSO_Strategy = strategies.CombinedSignalStrategy
+    PSO_Strategy = CombinedSignalStrategy
     w, buy_threshold, sell_threshold = func_utils.get_split_w_threshold(best_pos)
     PSO_Strategy.w = w
     PSO_Strategy.buy_threshold = buy_threshold
@@ -203,7 +249,7 @@ def execute_pso_strategy(df, commission, data_name, s_test, e_test):
     PSO_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(PSO_Strategy, df_test, commission)
 
     # Guardamos los resultados
-    execution_analysis.printAnalysis(data_name, initial_value, final_value, ta, dd, ma, 'particle_swarm_optimization')
+    execution_analysis.printAnalysis('particle_swarm_optimization', data_name, initial_value, final_value, ta, dd, ma)
     # Guardamos la grafica de la simulacion
     execution_plot.plot_simulation(PSO_Cerebro, 'particle_swarm_optimization', data_name, s_test, e_test)
 

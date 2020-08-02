@@ -1,37 +1,16 @@
 # -*- coding: utf-8 -*-
 
-import pandas as pd
-import numpy as np
-import math
-# Just disables the warning, doesn't enable AVX/FMA
 import os
-import sys, getopt
-from datetime import datetime, timedelta
+import sys
 
-
-import utils.func_utils as func_utils
-import utils.myCerebro as myCerebro
-import utils.myAnalyzer as myAnalyzer
-import utils.testStrategy as testStrategy
-import utils.strategies as strategies
-
-import backtrader as bt
 import backtrader.plot
 import matplotlib
 import matplotlib.pyplot as plt
-
-from numpy.random import seed
 
 import warnings
 
 if not sys.warnoptions:
     warnings.simplefilter("ignore")
-
-# Opciones de ejecucion
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-pd.options.mode.chained_assignment = None
-np.set_printoptions(threshold=sys.maxsize)
 
 
 def plot_simulation(cerebro, file_name, data_name, from_date=None, to_date=None):
