@@ -17,8 +17,8 @@ def getData(data_name):
     path_data = '../data/'+data_name+'.csv'
     df = None
 
-    # Comprobamos si los datos ya existen
-    # Si no existen los descargamos y los guardamos en la carpeta data
+    # Check if data exists
+    # If not exists then data is downloaded and save in folder data
     if os.path.exists(path_data):
         print('Datos existentes en ../data.')
         df = pd.read_csv(path_data, index_col = "Date", parse_dates = True)

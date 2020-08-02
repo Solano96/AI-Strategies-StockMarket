@@ -18,7 +18,6 @@ def create_folder_inside_img_if_not_exists(folder_name):
     Create folder inside img folder
     :param folder_name: folder name
     """
-
     if not os.path.exists('../img'):
         os.makedirs('../img')
 
