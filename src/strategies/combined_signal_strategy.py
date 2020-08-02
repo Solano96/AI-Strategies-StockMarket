@@ -28,12 +28,14 @@ class CombinedSignalStrategy(bt.Strategy):
     optimizer = None
     gen_representation = None
 
+
     def __init__(self):
         """ CombinedSignalStrategy Class Initializer """
         # Keep a reference to the "close" line in the data[0] dataseries
         self.dataclose = self.datas[0].close
         # To keep track of pending orders
         self.order = None
+
 
     def next(self):
         """ Define logic in each iteration """
@@ -46,8 +48,7 @@ class CombinedSignalStrategy(bt.Strategy):
         if self.order:
             return
 
-        # ReTrain optimization algorithm
-        '''
+        # ReTrain optimization algorithm        
         if len(self) % 30 == 0:
             from_date = self.data.datetime.date().replace(year = self.data.datetime.date().year -1)
             to_date = self.data.datetime.date() - timedelta(days=1)
@@ -60,7 +61,7 @@ class CombinedSignalStrategy(bt.Strategy):
             best_cost, best_pos = self.optimizer.optimize(self.gen_representation.cost_function, iters=20, **kwargs)
 
             self.w, self.buy_threshold, self.sell_threshold = func_utils.get_split_w_threshold(best_pos)
-        '''
+
 
         # Get combined signal
         final_signal = func_utils.get_combined_signal(self.moving_average_rules, self.moving_averages, self.w, len(self)-1)

@@ -13,6 +13,19 @@ if not sys.warnoptions:
     warnings.simplefilter("ignore")
 
 
+def create_folder_inside_img_if_not_exists(folder_name):
+    """
+    Create folder inside img folder
+    :param folder_name: folder name
+    """
+
+    if not os.path.exists('../img'):
+        os.makedirs('../img')
+
+    if not os.path.exists('../img/' + folder_name):
+        os.makedirs('../img/' + folder_name)
+
+
 def plot_simulation(cerebro, file_name, data_name, from_date=None, to_date=None):
     """
     Plot strategy simulation
@@ -31,8 +44,8 @@ def plot_simulation(cerebro, file_name, data_name, from_date=None, to_date=None)
 
     #plt.show()
 
-    if not os.path.exists('../img/simulacion_' + file_name):
-        os.makedirs('../img/simulacion_' + file_name)
+    # Create simulacion folder if not exists
+    create_folder_inside_img_if_not_exists('simulacion_' + file_name)
 
     if from_date==None or to_date==None:
         plt.savefig('../img/simulacion_' + file_name + '/' + data_name + '_' + file_name + '.png')
@@ -59,8 +72,8 @@ def plot_capital(strategy_list, data_name, img_name, from_date=None, to_date=Non
     ax.legend(loc='upper left')
     ax.yaxis.grid(linestyle="-")
 
-    if not os.path.exists('../img/ganancias/'):
-        os.makedirs('../img/ganancias/')
+    # Create ganancias folder if not exists
+    create_folder_inside_img_if_not_exists('ganancias')
 
     if from_date==None or to_date==None:
         plt.savefig('../img/ganancias/' + data_name + '_' + img_name + '.png')

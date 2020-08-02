@@ -24,6 +24,7 @@ class ClassicStrategy(bt.SignalStrategy):
     values = []
     closes = []
 
+
     def __init__(self):
         """ ClassicStrategy Class Initializer """
         # Keep a reference to the "close" line in the data[0] dataseries
