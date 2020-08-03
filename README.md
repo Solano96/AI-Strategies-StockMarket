@@ -69,7 +69,7 @@ python3 main.py -s <strategy-name> -q <quote-name> -f <from> -t <to>
 Example:
 
 ```
-python3 main.py --strategy neural-network --quote AAPL
+python3 main.py --strategy neural-network --quote AAPL --from-date 2011-12-22 --to-date 2013-12-22
 ```
 
 PD: You can use as data name any market abbreviation recognized by yahoo finance.
