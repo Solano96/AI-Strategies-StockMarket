@@ -25,10 +25,10 @@ def create_folder_inside_img_if_not_exists(folder_name):
         os.makedirs('../img/' + folder_name)
 
 
-def plot_simulation(cerebro, file_name, data_name, from_date=None, to_date=None):
+def plot_simulation(cerebro, file_name, data_name, from_date=None, to_date=None, size=''):
     """
     Plot strategy simulation
-    :param cerebro:
+    :param cerebro: backtrader engine
     :param file_name: file name for the generated image
     :param data_name: quote data name
     :param from_date: start date of simulation
@@ -39,7 +39,11 @@ def plot_simulation(cerebro, file_name, data_name, from_date=None, to_date=None)
     plt.subplots_adjust(top=0.98, bottom=0.1, left=0.1, right=0.9, hspace=0.0, wspace=0.0)
 
     fig = matplotlib.pyplot.gcf()
-    #fig.set_size_inches(12, 6.46)
+
+    default_size_inches = fig.get_size_inches()
+
+    if size == 'big':
+        fig.set_size_inches(12, 6.46)
 
     #plt.show()
 
@@ -47,10 +51,11 @@ def plot_simulation(cerebro, file_name, data_name, from_date=None, to_date=None)
     create_folder_inside_img_if_not_exists('simulacion_' + file_name)
 
     if from_date==None or to_date==None:
-        plt.savefig('../img/simulacion_' + file_name + '/' + data_name + '_' + file_name + '.png')
+        plt.savefig('../img/simulacion_' + file_name + '/' + data_name + '_' + file_name + size + '.png')
     else:
-        plt.savefig('../img/simulacion_' + file_name + '/' + data_name + '_' + from_date + '_' + to_date + '_' + file_name + '.png')
+        plt.savefig('../img/simulacion_' + file_name + '/' + data_name + '_' + from_date + '_' + to_date + '_' + file_name + size + '.png')
 
+    fig.set_size_inches(default_size_inches)
 
 def plot_capital(strategy_list, data_name, img_name, from_date=None, to_date=None):
     """

@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
+import logging
+logging.disable(logging.CRITICAL)
 
-import pandas as pd
-import numpy as np
-import math
 # Just disables the warning, doesn't enable AVX/FMA
 import os
 import sys, getopt
-from datetime import datetime, timedelta
 
 import utils.func_utils as func_utils
 
@@ -17,26 +15,6 @@ from strategies_execution.executions import execute_pso_strategy
 
 import strategies_execution.execution_plot as execution_plot
 
-import backtrader as bt
-import backtrader.plot
-import matplotlib
-import matplotlib.pyplot as plt
-
-from numpy.random import seed
-
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter("ignore")
-
-seed(1)
-# Opciones de ejecucion
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-pd.options.mode.chained_assignment = None
-np.set_printoptions(threshold=sys.maxsize)
-
-
 def main(argv):
     strategy = ''
     quote = ''
@@ -46,9 +24,9 @@ def main(argv):
     s_test, e_test = '2011-12-22', '2013-12-22'
 
     try:
-        opts, args = getopt.getopt(argv, 'hs:q:f:t:', ['help', 'strategy=', 'quote=', 'from-date=', 'to-date=',
+        opts, args = getopt.getopt(argv, 'hs:q:f:t:v', ['help', 'strategy=', 'quote=', 'from-date=', 'to-date=',
                                                        'nn-gain=', 'nn-loss=', 'nn-days=', 'nn-epochs=',
-                                                       'pso-normalization='])
+                                                       'pso-normalization=', 'verbose'])
     except getopt.GetoptError:
         print('main.py -s <strategy> -q <quote> -f <from-date> -t <to-date>')
         sys.exit(2)
@@ -74,6 +52,8 @@ def main(argv):
             s_test = arg
         elif opt in ("-t", "--to-date"):
             e_test = arg
+        elif opt in("-v", "--verbose"):
+            logging.disable(logging.NOTSET)
 
     df = func_utils.getData(quote)
 
@@ -120,6 +100,10 @@ def main(argv):
 
         PSO_Cerebro, PSO_Strategy = execute_pso_strategy(df, options, commission, quote, s_test, e_test, normalization)
         strategy_list.append((PSO_Strategy, 'Particle Swarm Optimization'))
+
+    if len(strategy_list) == 0:
+        print("ERROR: incorrect strategy name. Please select one between: buy-and-hold | classic | neural-network | combined-signal-pso | all.")
+        sys.exit(2)
 
     execution_plot.plot_capital(strategy_list, quote, strategy, s_test, e_test)
 

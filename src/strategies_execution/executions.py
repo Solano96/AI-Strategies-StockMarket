@@ -128,6 +128,7 @@ def execute_buy_and_hold_strategy(df, commission, data_name, start_date, end_dat
 
     # Save results
     execution_analysis.printAnalysis('comprar_y_mantener', data_name, initial_value, final_value, ta, dd, ma)
+    execution_analysis.printAnalysisPDF(BH_Cerebro, 'comprar_y_mantener', data_name, initial_value, final_value, ta, dd, ma, start_date, end_date)
     # Save simulation chart
     execution_plot.plot_simulation(BH_Cerebro, 'comprar_y_mantener', data_name, start_date, end_date)
 
@@ -156,6 +157,7 @@ def execute_classic_strategy(df, commission, data_name, start_date, end_date):
 
     # Save results
     execution_analysis.printAnalysis('estrategia_clasica', data_name, initial_value, final_value, ta, dd, ma)
+    execution_analysis.printAnalysisPDF(Classic_Cerebro, 'estrategia_clasica', data_name, initial_value, final_value, ta, dd, ma, start_date, end_date)
     # Save simulation chart
     execution_plot.plot_simulation(Classic_Cerebro, 'estrategia_clasica', data_name, start_date, end_date)
 
@@ -239,6 +241,8 @@ def execute_neural_network_strategy(df, options, commission, data_name, s_test, 
     NN_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(NN_Strategy, df_test, commission)
     # Save results
     execution_analysis.printAnalysis('red_neuronal', data_name, initial_value, final_value, ta, dd, ma, train_accuracy, test_accuracy)
+    execution_analysis.printAnalysisPDF(NN_Cerebro, 'red_neuronal', data_name, initial_value, final_value, ta, dd, ma, s_test, e_test)
+
     # Save simulation chart
     execution_plot.plot_simulation(NN_Cerebro, 'red_neuronal', data_name, s_test, e_test)
 
@@ -317,6 +321,8 @@ def execute_pso_strategy(df, options, commission, data_name, s_test, e_test, nor
 
     # Guardamos los resultados
     execution_analysis.printAnalysis('particle_swarm_optimization', data_name, initial_value, final_value, ta, dd, ma)
+    execution_analysis.printAnalysisPDF(PSO_Cerebro, 'particle_swarm_optimization', data_name, initial_value, final_value, ta, dd, ma, s_test, e_test)
+
     # Guardamos la grafica de la simulacion
     execution_plot.plot_simulation(PSO_Cerebro, 'particle_swarm_optimization', data_name, s_test, e_test)
 
