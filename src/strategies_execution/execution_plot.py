@@ -43,7 +43,7 @@ def plot_simulation(cerebro, file_name, data_name, from_date=None, to_date=None,
     default_size_inches = fig.get_size_inches()
 
     if size == 'big':
-        fig.set_size_inches(12, 6.46)
+        fig.set_size_inches(8, 5)
 
     #plt.show()
 
