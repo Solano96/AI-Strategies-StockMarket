@@ -54,8 +54,7 @@ class NeuralNetworkStrategy(bt.Strategy):
 
         # Buy Operation
         if not self.position and p > 0.55:
-            buy_price = self.data.close[0] * (1+0.002)
-            buy_size = self.broker.get_cash() / buy_price
+            buy_size = self.broker.get_cash() / self.datas[0].open
             self.buy(size = buy_size)
 
             self.predictions.append(p)

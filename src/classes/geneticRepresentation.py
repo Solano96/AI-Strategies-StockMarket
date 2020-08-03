@@ -10,7 +10,8 @@ class GeneticRepresentation():
     def __init__(self, df, s_train, e_train, s_test, e_test):
         """ GeneticRepresentation Class Initializer """
 
-        self.period_list = [2,5,10,15,20,25,30,40,50,75,100,125,150,200,250]
+        #self.period_list = [2,5,10,15,20,25,30,40,50,75,100,125,150,200,250]
+        self.period_list = [5,10,15,20,25,30,40,50]
         self.moving_average_rules = []
 
         # Get all possible moving averages rules from period list
@@ -44,7 +45,7 @@ class GeneticRepresentation():
             self.moving_averages_test[col_ma_name] = [self.df_test.iloc[i][col_ma_name] for i in range(len(self.df_test.index))]
 
 
-    def cost_function(self, x, from_date, to_date):
+    def cost_function(self, x, from_date, to_date, normalization='exponential'):
         """ Cost function adapted to PSO algorithm """
 
         df_evaluate = self.df[from_date:to_date]
@@ -68,7 +69,7 @@ class GeneticRepresentation():
             buy_day_list = []
             sell_day_list = []
 
-            w, buy_threshold, sell_threshold = func_utils.get_split_w_threshold(alpha)
+            w, buy_threshold, sell_threshold = func_utils.get_split_w_threshold(alpha, normalization)
 
             for i in range(size):
 

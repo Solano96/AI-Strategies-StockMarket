@@ -24,6 +24,7 @@ class CombinedSignalStrategy(bt.Strategy):
     period_list = []
     moving_average_rules = []
     moving_averages = {}
+    normalization = None
 
     optimizer = None
     gen_representation = None
@@ -48,7 +49,7 @@ class CombinedSignalStrategy(bt.Strategy):
         if self.order:
             return
 
-        # ReTrain optimization algorithm        
+        # ReTrain optimization algorithm
         if len(self) % 30 == 0:
             from_date = self.data.datetime.date().replace(year = self.data.datetime.date().year -1)
             to_date = self.data.datetime.date() - timedelta(days=1)
@@ -60,7 +61,7 @@ class CombinedSignalStrategy(bt.Strategy):
             kwargs={'from_date': from_date, 'to_date': to_date}
             best_cost, best_pos = self.optimizer.optimize(self.gen_representation.cost_function, iters=20, **kwargs)
 
-            self.w, self.buy_threshold, self.sell_threshold = func_utils.get_split_w_threshold(best_pos)
+            self.w, self.buy_threshold, self.sell_threshold = func_utils.get_split_w_threshold(best_pos, self.normalization)
 
 
         # Get combined signal

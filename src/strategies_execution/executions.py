@@ -162,7 +162,7 @@ def execute_classic_strategy(df, commission, data_name, start_date, end_date):
     return Classic_Cerebro, Classic_Strategy
 
 
-def execute_neural_network_strategy(df, options, commision, data_name, s_test, e_test):
+def execute_neural_network_strategy(df, options, commission, data_name, s_test, e_test):
     """
     Execute neural network strategy on data history contained in df
     :param df: dataframe with historical data
@@ -171,7 +171,7 @@ def execute_neural_network_strategy(df, options, commision, data_name, s_test, e
         - loss - loss threshold simulation of labelling
         - n_day - number of days in simulation of labelling
         - epochs - number of epochs to train the neural network
-    :param commision: commission to be paid on each operation
+    :param commission: commission to be paid on each operation
     :param data_name: quote data name
     :param start_date: start date of simulation
     :param end_date: end date of simulation
@@ -194,7 +194,7 @@ def execute_neural_network_strategy(df, options, commision, data_name, s_test, e
 
     # Preprocess dataset
     df = func_utils.add_features(df)
-    df = func_utils.add_label(df, gain = gain, loss = loss, n_day = n_day, commission = comm)
+    df = func_utils.add_label(df, gain = gain, loss = loss, n_day = n_day, commission = commission)
 
     # Split train and test
     df_train, df_test, X_train, X_test, y_train, y_test = func_utils.split_df_date(df, s_train, e_train, s_test, e_test)
@@ -236,7 +236,7 @@ def execute_neural_network_strategy(df, options, commision, data_name, s_test, e
     NN_Strategy.n_day = n_day
 
     # Execute strategy
-    NN_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(NN_Strategy, df_test, commision)
+    NN_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(NN_Strategy, df_test, commission)
     # Save results
     execution_analysis.printAnalysis('red_neuronal', data_name, initial_value, final_value, ta, dd, ma, train_accuracy, test_accuracy)
     # Save simulation chart
@@ -245,7 +245,7 @@ def execute_neural_network_strategy(df, options, commision, data_name, s_test, e
     return NN_Cerebro, NN_Strategy
 
 
-def execute_pso_strategy(df, options, commission, data_name, s_test, e_test):
+def execute_pso_strategy(df, options, commission, data_name, s_test, e_test, normalization='exponential'):
     """
     Execute particle swarm optimization strategy on data history contained in df
     :param df: dataframe with historical data
@@ -275,10 +275,15 @@ def execute_pso_strategy(df, options, commission, data_name, s_test, e_test):
     # ------------ Fijamos hiperparámetros ------------ #
 
     n_particles=20
-    dimensions=107
-    options = {'c1': 0.5, 'c2': 0.3, 'w':0.9}
-    max_bound = 1.0 * np.ones(dimensions-2)
-    min_bound = -max_bound
+    dimensions=len(gen_representation.moving_average_rules)+2
+
+    if normalization == 'exponential':
+        max_bound = 1.0 * np.ones(dimensions-2)
+        min_bound = -max_bound
+    elif normalization == 'l1':
+        max_bound = 1.0 * np.ones(dimensions-2)
+        min_bound = np.zeros(dimensions-2)
+
     max_bound = np.append(max_bound, [1.0, 0.0])
     min_bound = np.append(min_bound, [0.0, -1.0])
     bounds = (min_bound, max_bound)
@@ -294,6 +299,7 @@ def execute_pso_strategy(df, options, commission, data_name, s_test, e_test):
     # Create an instance from CombinedSignalStrategy class and assign parameters
     PSO_Strategy = CombinedSignalStrategy
     w, buy_threshold, sell_threshold = func_utils.get_split_w_threshold(best_pos)
+
     PSO_Strategy.w = w
     PSO_Strategy.buy_threshold = buy_threshold
     PSO_Strategy.sell_threshold = sell_threshold
@@ -302,6 +308,7 @@ def execute_pso_strategy(df, options, commission, data_name, s_test, e_test):
     PSO_Strategy.moving_averages = gen_representation.moving_averages_test
     PSO_Strategy.optimizer = optimizer
     PSO_Strategy.gen_representation = gen_representation
+    PSO_Strategy.normalization = normalization
 
     df_test = gen_representation.df_test
     df_train = gen_representation.df_train

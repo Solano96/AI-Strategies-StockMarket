@@ -19,8 +19,8 @@ def exponential_moving_average(df, n):
 	:param n: exponential moving average period
 	:return: dataframe with exponential moving average of n period added as a column
 	"""
-    df['EMA_' + str(n)] = ta.EMA(df['Close'], timeperiod=n)
-    return df
+	df['EMA_' + str(n)] = ta.EMA(df['Close'], timeperiod=n)
+	return df
 
 # Momento
 def momentum(df, n):
@@ -30,8 +30,8 @@ def momentum(df, n):
 	:param n: momentum period
 	:return: dataframe with momentum of n period added as a column
 	"""
-    df['Momentum_' + str(n)] = ta.MOM(df['Close'], timeperiod=n)
-    return df
+	df['Momentum_' + str(n)] = ta.MOM(df['Close'], timeperiod=n)
+	return df
 
 # Indice de fuerza relativa RSI
 def relative_strength_index(df, n):
@@ -52,8 +52,8 @@ def standard_deviation(df, n):
 	:param n: standard deviation period
 	:return: dataframe with standard deviation of n period added as a column
 	"""
-    df['STD_' + str(n)] = ta.STDDEV(df['Close'], timeperiod=n)
-    return df
+	df['STD_' + str(n)] = ta.STDDEV(df['Close'], timeperiod=n)
+	return df
 
 # ROC
 def rate_of_change(df, n):
@@ -63,8 +63,8 @@ def rate_of_change(df, n):
 	:param n: rate of change period
 	:return: dataframe with rate of change of n period added as a column
 	"""
-    df['ROC_' + str(n)] = ta.ROC(df['Close'], timeperiod=n)
-    return df
+	df['ROC_' + str(n)] = ta.ROC(df['Close'], timeperiod=n)
+	return df
 
 # MACD e histograma
 def moving_average_CD(df, s, f):
@@ -75,10 +75,10 @@ def moving_average_CD(df, s, f):
 	:param s: slow period
 	:return: dataframe with moving average CD and histogram as a columns
 	"""
-    macd, macdsignal, macd_hist = ta.MACD(df['Close'], fastperiod=f, slowperiod=s, signalperiod=9)
-    df['MACD_'+str(s)+'_'+str(f)] = macd
-    df['MACD_HIST_'+str(s)+'_'+str(f)] = macd_hist
-    return df
+	macd, macdsignal, macd_hist = ta.MACD(df['Close'], fastperiod=f, slowperiod=s, signalperiod=9)
+	df['MACD_'+str(s)+'_'+str(f)] = macd
+	df['MACD_HIST_'+str(s)+'_'+str(f)] = macd_hist
+	return df
 
 # Oscilador estocastico lento
 def stochastic(df, n):

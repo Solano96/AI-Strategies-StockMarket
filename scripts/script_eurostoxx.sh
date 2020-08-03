@@ -1,5 +1,6 @@
 #!/bin/bash
 
+cd src
 python3 main.py --strategy all --quote ACA.PA   --from-date 2011-12-22 --to-date 2013-12-22 --nn-gain 0.07 --nn-loss 0.03 --nn-days 10 --nn-epochs 300
 python3 main.py --strategy all --quote AGN.AS   --from-date 2011-12-22 --to-date 2013-12-22 --nn-gain 0.07 --nn-loss 0.03 --nn-days 10 --nn-epochs 300
 python3 main.py --strategy all --quote ALV.DE   --from-date 2011-12-22 --to-date 2013-12-22 --nn-gain 0.07 --nn-loss 0.03 --nn-days 10 --nn-epochs 300

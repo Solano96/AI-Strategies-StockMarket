@@ -47,7 +47,8 @@ def main(argv):
 
     try:
         opts, args = getopt.getopt(argv, 'hs:q:f:t:', ['help', 'strategy=', 'quote=', 'from-date=', 'to-date=',
-                                                               'nn-gain=', 'nn-loss=', 'nn-days=', 'nn-epochs='])
+                                                       'nn-gain=', 'nn-loss=', 'nn-days=', 'nn-epochs=',
+                                                       'pso-normalization='])
     except getopt.GetoptError:
         print('main.py -s <strategy> -q <quote> -f <from-date> -t <to-date>')
         sys.exit(2)
@@ -95,20 +96,29 @@ def main(argv):
 
         for opt, arg in opts:
             if opt in ("--nn-gain"):
-                    options['gains'] = float(arg)
+                options['gains'] = float(arg)
             elif opt in ("--nn-loss"):
-                    options['loss'] = float(arg)
+                options['loss'] = float(arg)
             elif opt in ("--nn-days"):
-                    options['n_day'] = int(arg)
+                options['n_day'] = int(arg)
             elif opt in ("--nn-epochs"):
-                    options['epochs'] = int(arg)
+                options['epochs'] = int(arg)
 
         NN_Cerebro, NN_Strategy = execute_neural_network_strategy(df, options, commission, quote, s_test, e_test)
         strategy_list.append((NN_Strategy, 'Red Neuronal'))
 
     # Execute combined signal strategy optimized with pso
     if strategy in ('combined-signal-pso', 'all'):
-        PSO_Cerebro, PSO_Strategy = execute_pso_strategy(df, commission, quote, s_test, e_test)
+
+        normalization = 'exponential'
+
+        for opt, arg in opts:
+            if opt in ("--pso-normalization"):
+                normalization = arg
+
+        options = {'c1': 0.5, 'c2': 0.3, 'w':0.9}
+
+        PSO_Cerebro, PSO_Strategy = execute_pso_strategy(df, options, commission, quote, s_test, e_test, normalization)
         strategy_list.append((PSO_Strategy, 'Particle Swarm Optimization'))
 
     execution_plot.plot_capital(strategy_list, quote, strategy, s_test, e_test)

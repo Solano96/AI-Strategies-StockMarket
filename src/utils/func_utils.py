@@ -178,13 +178,19 @@ def split_df_date(df, start_train_date, end_train_date, start_test_date, end_tes
     return df_train, df_test, X_train, X_test, y_train, y_test
 
 
-def get_split_w_threshold(alpha):
+def get_split_w_threshold(alpha, normalization='exponential'):
     """
     Get normalize weights and thresholds from alpha vector
     :param alpha: optimize Vectorize
     :return: weights and thresholds
     """
-    w = np.exp(alpha[:len(alpha)-2])/np.sum(np.exp(alpha[:len(alpha)-2]))
+    w = []
+
+    if normalization == 'exponential':
+        w = np.exp(alpha[:len(alpha)-2])/np.sum(np.exp(alpha[:len(alpha)-2]))
+    elif normalization == 'l1':
+        w = alpha[:len(alpha)-2]/np.sum(np.abs(alpha[:len(alpha)-2]))
+
     buy_threshold = alpha[len(alpha)-2]
     sell_threshold = alpha[len(alpha)-1]
 
@@ -212,10 +218,6 @@ def get_combined_signal(moving_average_rules, moving_averages, w, index):
         else:
             signal_list.append(+1)
 
-    final_signal = 0
-
-    # Get a unique signal from the weighted sum of all signals
-    for w_i, s_i in zip(w, signal_list):
-        final_signal += w_i*s_i
+    final_signal = np.sum(np.array(w)*np.array(signal_list))
 
     return final_signal

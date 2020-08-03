@@ -15,6 +15,15 @@ if not sys.warnoptions:
     warnings.simplefilter("ignore")
 
 
+def create_folder_if_not_exists(folder_name):
+    """
+    Create folder inside img folder
+    :param folder_name: folder name
+    """
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
+
+
 def printAnalysis(file_name, data_name, initial_value, final_value, tradeAnalyzer, drawDownAnalyzer, myAnalyzer,
                   train_accuracy=None, test_accuracy=None):
     '''
@@ -29,6 +38,8 @@ def printAnalysis(file_name, data_name, initial_value, final_value, tradeAnalyze
     :param train_accuracy: train accuracy (optional)
     :param test_accuracy: test accuracy (optional)
     '''
+
+    create_folder_if_not_exists('../resultados')
 
     f = open ('../resultados/resultados_' + file_name + '.txt','a')
     f.write(data_name)
