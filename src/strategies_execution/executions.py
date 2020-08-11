@@ -30,6 +30,7 @@ from strategies.classic_strategy import ClassicStrategy
 from strategies.neural_network_strategy import NeuralNetworkStrategy
 from strategies.combined_signal_strategy import CombinedSignalStrategy
 from strategies.one_moving_average_strategy import OneMovingAverageStrategy
+from strategies.moving_averages_cross_strategy import MovingAveragesCrossStrategy
 
 import pyswarms as ps
 
@@ -180,7 +181,7 @@ def execute_one_moving_average_strategy(df, commission, data_name, start_date, e
     :param end_date: end date of simulation
     :return:
         - OMA_Cerebro - execution engine
-        - OMA_Strategy - classic strategy instance
+        - OMA_Strategy - one moving average strategy instance
     """
 
     print_execution_name("Estrategia: media móvil")
@@ -198,6 +199,36 @@ def execute_one_moving_average_strategy(df, commission, data_name, start_date, e
     execution_plot.plot_simulation(OMA_Cerebro, strategy_name, data_name, start_date, end_date)
 
     return OMA_Cerebro, OMA_Strategy
+
+
+def execute_moving_averages_cross_strategy(df, commission, data_name, start_date, end_date):
+    """
+    Execute moving averages cross strategy on data history contained in df
+    :param df: dataframe with historical data
+    :param commision: commission to be paid on each operation
+    :param data_name: quote data name
+    :param start_date: start date of simulation
+    :param end_date: end date of simulation
+    :return:
+        - MAC_Cerebro - execution engine
+        - MAC_Strategy - moving averages cross strategy instance
+    """
+
+    print_execution_name("Estrategia: cruce de medias móviles")
+
+    df = df[start_date:end_date]
+
+    MAC_Strategy =  MovingAveragesCrossStrategy
+    MAC_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(MAC_Strategy, df, commission)
+
+    # Save results
+    strategy_name = 'estrategia_cruce_medias_moviles'
+    execution_analysis.printAnalysis(strategy_name, data_name, initial_value, final_value, ta, dd, ma)
+    execution_analysis.printAnalysisPDF(MAC_Cerebro, strategy_name, data_name, initial_value, final_value, ta, dd, ma, start_date, end_date)
+    # Save simulation chart
+    execution_plot.plot_simulation(MAC_Cerebro, strategy_name, data_name, start_date, end_date)
+
+    return MAC_Cerebro, MAC_Strategy
 
 
 def execute_neural_network_strategy(df, options, commission, data_name, s_test, e_test):

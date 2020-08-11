@@ -68,9 +68,14 @@ def main(argv):
         strategy_list.append((Classic_Strategy, 'Estrategia Clásica'))
 
     # Execute one moving average
-    if strategy in ('one-moving-average', 'all'):
+    if strategy in ('one-ma', 'all'):
         OMA_Cerebro, OMA_Strategy = execute_one_moving_average_strategy(df, commission, quote, s_test, e_test)
         strategy_list.append((OMA_Strategy, 'Estrategia Media Móvil'))
+        
+    # Execute two moving average
+    if strategy in ('two-ma', 'all'):
+        MAC_Cerebro, MAC_Strategy = execute_moving_averages_cross_strategy(df, commission, quote, s_test, e_test)
+        strategy_list.append((MAC_Strategy, 'Estrategia Cruce Medias Móviles'))
 
     # Execute neural network strategy
     if strategy in ('neural-network', 'all'):
