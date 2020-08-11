@@ -191,17 +191,17 @@ def printAnalysisPDF(cerebro, file_name, data_name, initial_value, final_value, 
 
     print_section(pdf, "Simulación", font_family, section_size, margin)
 
-    execution_plot.plot_simulation(cerebro, file_name, data_name, from_date, to_date, size='big')
+    # Image with 800x500 pixels (8,5)
+    image_path = execution_plot.plot_simulation(cerebro, file_name, data_name, from_date, to_date,
+                                                size=(8,5), style='line')
 
-    image_path = ''
-    pdf_path = ''
+    # PDF path
+    pdf_path = '../reports/' + data_name + '_' + file_name
 
-    if from_date==None or to_date==None:
-        image_path = '../img/simulacion_' + file_name + '/' + data_name + '_' + file_name + 'big.png'
-        pdf_path = '../reports/' + data_name + '_' + file_name + '.pdf'
-    else:
-        image_path = '../img/simulacion_' + file_name + '/' + data_name + '_' + from_date + '_' + to_date + '_' + file_name + 'big.png'
-        pdf_path = '../reports/' + data_name + '_' + file_name + '_' + from_date + '_' + to_date + '.pdf'
+    if from_date != None and to_date != None:
+        pdf_path += '_' + from_date + '_' + to_date
+
+    pdf_path += '.pdf'
 
     pdf.image(image_path, x=0.0, y=5.8, w=8.0)
     os.remove(image_path)

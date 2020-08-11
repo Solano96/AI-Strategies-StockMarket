@@ -50,8 +50,9 @@ class CombinedSignalStrategy(bt.Strategy):
             return
 
         # ReTrain optimization algorithm
-        if len(self) % 30 == 0:
-            from_date = self.data.datetime.date().replace(year = self.data.datetime.date().year -1)
+        if self.optimizer != None and len(self) % 30 == 0:
+            #from_date = self.data.datetime.date().replace(year = self.data.datetime.date().year -1)
+            from_date = self.data.datetime.date() - timedelta(days=180)
             to_date = self.data.datetime.date() - timedelta(days=1)
 
             # Reset best cost
@@ -59,10 +60,9 @@ class CombinedSignalStrategy(bt.Strategy):
 
             # Optimize weights
             kwargs={'from_date': from_date, 'to_date': to_date}
-            best_cost, best_pos = self.optimizer.optimize(self.gen_representation.cost_function, iters=20, **kwargs)
+            best_cost, best_pos = self.optimizer.optimize(self.gen_representation.cost_function, iters=50, **kwargs)
 
             self.w, self.buy_threshold, self.sell_threshold = func_utils.get_split_w_threshold(best_pos, self.normalization)
-
 
         # Get combined signal
         final_signal = func_utils.get_combined_signal(self.moving_average_rules, self.moving_averages, self.w, len(self)-1)

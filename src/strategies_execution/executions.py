@@ -13,8 +13,10 @@ from sklearn.preprocessing import StandardScaler
 import utils.func_utils as func_utils
 
 # Import classes
-import classes.myCerebro as myCerebro
-import classes.myAnalyzer as myAnalyzer
+from classes.myCerebro import MyCerebro
+from classes.myAnalyzer import MyAnalyzer
+from classes.myBuySell import MyBuySell
+
 import classes.model as model
 import classes.geneticRepresentation as geneticRepresentation
 
@@ -27,6 +29,7 @@ from strategies.buy_and_hold_strategy import BuyAndHoldStrategy
 from strategies.classic_strategy import ClassicStrategy
 from strategies.neural_network_strategy import NeuralNetworkStrategy
 from strategies.combined_signal_strategy import CombinedSignalStrategy
+from strategies.one_moving_average_strategy import OneMovingAverageStrategy
 
 import pyswarms as ps
 
@@ -70,7 +73,7 @@ def execute_strategy(strategy, df, commission):
     """
 
     # Create cerebro instance
-    cerebro = myCerebro.MyCerebro()
+    cerebro = MyCerebro()
     # Add strategy to cerebro
     cerebro.addstrategy(strategy)
 
@@ -81,7 +84,10 @@ def execute_strategy(strategy, df, commission):
     # Add analyzers to cerebro
     cerebro.addanalyzer(bt.analyzers.DrawDown, _name="drawDown")
     cerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name="tradeAnalyzer")
-    cerebro.addanalyzer(myAnalyzer.MyAnalyzer, _name = "myAnalyzer")
+    cerebro.addanalyzer(MyAnalyzer, _name = "myAnalyzer")
+
+    # Change buy sell observer
+    bt.observers.BuySell = MyBuySell
 
     # Set initial cash and commision
     cerebro.broker.setcash(6000.0)
@@ -162,6 +168,36 @@ def execute_classic_strategy(df, commission, data_name, start_date, end_date):
     execution_plot.plot_simulation(Classic_Cerebro, 'estrategia_clasica', data_name, start_date, end_date)
 
     return Classic_Cerebro, Classic_Strategy
+
+
+def execute_one_moving_average_strategy(df, commission, data_name, start_date, end_date):
+    """
+    Execute one moving average strategy on data history contained in df
+    :param df: dataframe with historical data
+    :param commision: commission to be paid on each operation
+    :param data_name: quote data name
+    :param start_date: start date of simulation
+    :param end_date: end date of simulation
+    :return:
+        - OMA_Cerebro - execution engine
+        - OMA_Strategy - classic strategy instance
+    """
+
+    print_execution_name("Estrategia: media móvil")
+
+    df = df[start_date:end_date]
+
+    OMA_Strategy =  OneMovingAverageStrategy
+    OMA_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(OMA_Strategy, df, commission)
+
+    # Save results
+    strategy_name = 'estrategia_media_movil'
+    execution_analysis.printAnalysis(strategy_name, data_name, initial_value, final_value, ta, dd, ma)
+    execution_analysis.printAnalysisPDF(OMA_Cerebro, strategy_name, data_name, initial_value, final_value, ta, dd, ma, start_date, end_date)
+    # Save simulation chart
+    execution_plot.plot_simulation(OMA_Cerebro, strategy_name, data_name, start_date, end_date)
+
+    return OMA_Cerebro, OMA_Strategy
 
 
 def execute_neural_network_strategy(df, options, commission, data_name, s_test, e_test):
@@ -249,7 +285,7 @@ def execute_neural_network_strategy(df, options, commission, data_name, s_test, 
     return NN_Cerebro, NN_Strategy
 
 
-def execute_pso_strategy(df, options, commission, data_name, s_test, e_test, normalization='exponential'):
+def execute_pso_strategy(df, options, commission, data_name, s_test, e_test, iters=100, normalization='exponential'):
     """
     Execute particle swarm optimization strategy on data history contained in df
     :param df: dataframe with historical data
@@ -272,13 +308,14 @@ def execute_pso_strategy(df, options, commission, data_name, s_test, e_test, nor
 
     s_test_date = datetime.strptime(s_test, '%Y-%m-%d')
     s_train = s_test_date.replace(year = s_test_date.year - 2)
+    #s_train = s_test_date - timedelta(days=180)
     e_train = s_test_date - timedelta(days=1)
 
     gen_representation = geneticRepresentation.GeneticRepresentation(df, s_train, e_train, s_test, e_test)
 
     # ------------ Fijamos hiperparámetros ------------ #
 
-    n_particles=20
+    n_particles=50
     dimensions=len(gen_representation.moving_average_rules)+2
 
     if normalization == 'exponential':
@@ -291,7 +328,6 @@ def execute_pso_strategy(df, options, commission, data_name, s_test, e_test, nor
     max_bound = np.append(max_bound, [1.0, 0.0])
     min_bound = np.append(min_bound, [0.0, -1.0])
     bounds = (min_bound, max_bound)
-    iters = 100
 
     # Call instance of PSO
     optimizer = ps.single.GlobalBestPSO(n_particles=n_particles, dimensions=dimensions, options=options, bounds=bounds)

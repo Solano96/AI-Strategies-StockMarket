@@ -8,10 +8,7 @@ import sys, getopt
 
 import utils.func_utils as func_utils
 
-from strategies_execution.executions import execute_buy_and_hold_strategy
-from strategies_execution.executions import execute_classic_strategy
-from strategies_execution.executions import execute_neural_network_strategy
-from strategies_execution.executions import execute_pso_strategy
+from strategies_execution.executions import *
 
 import strategies_execution.execution_plot as execution_plot
 
@@ -26,7 +23,8 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, 'hs:q:f:t:v', ['help', 'strategy=', 'quote=', 'from-date=', 'to-date=',
                                                        'nn-gain=', 'nn-loss=', 'nn-days=', 'nn-epochs=',
-                                                       'pso-normalization=', 'verbose'])
+                                                       'pso-normalization=', 'pso-c1=', 'pso-c2=', 'pso-inertia=', 'pso-iters=',
+                                                       'verbose'])
     except getopt.GetoptError:
         print('main.py -s <strategy> -q <quote> -f <from-date> -t <to-date>')
         sys.exit(2)
@@ -38,7 +36,7 @@ def main(argv):
             print('\nUSAGE')
             print('\n\tmain.py -s <strategy> -q <quote>')
             print('\nOPTIONS')
-            print('\n\t-s, --strategy\tSelect a strategy between: buy-and-hold | classic | neural-network | combined-signal-pso | all.')
+            print('\n\t-s, --strategy\tSelect a strategy between: buy-and-hold | classic | one-moving-average | neural-network | combined-signal-pso | all.')
             print('\n\t-q, --quote\tUse as quote any market abbreviation recognized by yahoo finance. Examples: AAPL | FB | GOOGL | AMZN | ...')
             print('\n\t-f, --from-date\tStart date in simulation.')
             print('\n\t-t, --to-date\tEnd date in simulation.')
@@ -69,6 +67,11 @@ def main(argv):
         Classic_Cerebro, Classic_Strategy = execute_classic_strategy(df, commission, quote, s_test, e_test)
         strategy_list.append((Classic_Strategy, 'Estrategia Clásica'))
 
+    # Execute one moving average
+    if strategy in ('one-moving-average', 'all'):
+        OMA_Cerebro, OMA_Strategy = execute_one_moving_average_strategy(df, commission, quote, s_test, e_test)
+        strategy_list.append((OMA_Strategy, 'Estrategia Media Móvil'))
+
     # Execute neural network strategy
     if strategy in ('neural-network', 'all'):
 
@@ -91,14 +94,26 @@ def main(argv):
     if strategy in ('combined-signal-pso', 'all'):
 
         normalization = 'exponential'
+        c1 = 0.5
+        c2 = 0.3
+        w = 0.9
+        iters = 400
 
         for opt, arg in opts:
             if opt in ("--pso-normalization"):
                 normalization = arg
+            elif opt in ("--pso-c1"):
+                c1 = arg
+            elif opt in ("--pso-c2"):
+                c2 = arg
+            elif opt in ("--pso-inertia"):
+                w = arg
+            elif opt in ("--pso-iters"):
+                iters = arg
 
-        options = {'c1': 0.5, 'c2': 0.3, 'w':0.9}
+        options = {'c1': c1, 'c2': c2, 'w': w}
 
-        PSO_Cerebro, PSO_Strategy = execute_pso_strategy(df, options, commission, quote, s_test, e_test, normalization)
+        PSO_Cerebro, PSO_Strategy = execute_pso_strategy(df, options, commission, quote, s_test, e_test, iters, normalization)
         strategy_list.append((PSO_Strategy, 'Particle Swarm Optimization'))
 
     if len(strategy_list) == 0:
