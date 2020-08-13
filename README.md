@@ -36,7 +36,7 @@ sudo apt-get install python3-tk
 
 First clone the repository:
 ```
-git clone https://github.com/Solano96/TFG.git
+git clone https://github.com/Solano96/AI-Strategies-StockMarket.git
 ```
 
 Now we need to install some dependencies. To do this, execute the following command:
