@@ -6,11 +6,10 @@ logging.disable(logging.CRITICAL)
 import os
 import sys, getopt
 
-import utils.func_utils as func_utils
+import src.utils.func_utils as func_utils
+from src.strategies_execution.executions import *
+import src.strategies_execution.execution_plot as execution_plot
 
-from strategies_execution.executions import *
-
-import strategies_execution.execution_plot as execution_plot
 
 def main(argv):
     strategy = ''
@@ -71,7 +70,7 @@ def main(argv):
     if strategy in ('one-ma', 'all'):
         OMA_Cerebro, OMA_Strategy = execute_one_moving_average_strategy(df, commission, quote, s_test, e_test)
         strategy_list.append((OMA_Strategy, 'Estrategia Media Móvil'))
-        
+
     # Execute two moving average
     if strategy in ('two-ma', 'all'):
         MAC_Cerebro, MAC_Strategy = execute_moving_averages_cross_strategy(df, commission, quote, s_test, e_test)

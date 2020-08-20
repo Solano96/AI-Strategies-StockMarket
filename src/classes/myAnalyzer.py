@@ -1,4 +1,3 @@
-
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
@@ -11,7 +10,7 @@ from backtrader.utils.py3 import MAXINT
 
 class MyAnalyzer(Analyzer):
 
-    
+
     def create_analysis(self):
         self.rets = AutoOrderedDict()
         self.rets.trades.total = 0

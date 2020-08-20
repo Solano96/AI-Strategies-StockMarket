@@ -1,16 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
-
 import backtrader.plot
 import matplotlib
 import matplotlib.pyplot as plt
-
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter("ignore")
 
 
 def create_folder_inside_img_if_not_exists(folder_name):
@@ -18,11 +11,11 @@ def create_folder_inside_img_if_not_exists(folder_name):
     Create folder inside img folder
     :param folder_name: folder name
     """
-    if not os.path.exists('../img'):
-        os.makedirs('../img')
+    if not os.path.exists('./img'):
+        os.makedirs('./img')
 
-    if not os.path.exists('../img/' + folder_name):
-        os.makedirs('../img/' + folder_name)
+    if not os.path.exists('./img/' + folder_name):
+        os.makedirs('./img/' + folder_name)
 
 
 def plot_simulation(cerebro, file_name, data_name, from_date=None, to_date=None, size=None, style='line'):
@@ -53,7 +46,7 @@ def plot_simulation(cerebro, file_name, data_name, from_date=None, to_date=None,
     # Create simulacion folder if not exists
     create_folder_inside_img_if_not_exists('simulacion_' + file_name)
 
-    saved_file_name = '../img/simulacion_' + file_name + '/' + data_name + '_'
+    saved_file_name = './img/simulacion_' + file_name + '/' + data_name + '_'
 
     if from_date != None and to_date != None:
         saved_file_name += from_date + '_' + to_date + '_'
@@ -88,7 +81,7 @@ def plot_capital(strategy_list, data_name, img_name, from_date=None, to_date=Non
     # Create ganancias folder if not exists
     create_folder_inside_img_if_not_exists('ganancias')
 
-    saved_file_name = '../img/ganancias/' + data_name + '_'
+    saved_file_name = './img/ganancias/' + data_name + '_'
 
     if from_date != None and to_date != None:
         saved_file_name += from_date + '_' + to_date + '_'

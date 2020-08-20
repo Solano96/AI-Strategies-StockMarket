@@ -6,7 +6,7 @@ from datetime import timedelta
 
 import backtrader as bt
 from numpy.random import seed
-import utils.func_utils as func_utils
+import src.utils.func_utils as func_utils
 
 
 class ClassicStrategy(bt.SignalStrategy):

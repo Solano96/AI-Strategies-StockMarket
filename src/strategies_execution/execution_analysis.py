@@ -6,17 +6,15 @@ import math
 # Just disables the warning, doesn't enable AVX/FMA
 import os
 import sys
-
 import backtrader as bt
+from fpdf import FPDF
 
 import warnings
 
 if not sys.warnoptions:
     warnings.simplefilter("ignore")
 
-import strategies_execution.execution_plot as execution_plot
-
-from fpdf import FPDF
+import src.strategies_execution.execution_plot as execution_plot
 
 
 def create_folder_if_not_exists(folder_name):
@@ -43,9 +41,9 @@ def printAnalysis(file_name, data_name, initial_value, final_value, tradeAnalyze
     :param test_accuracy: test accuracy (optional)
     '''
 
-    create_folder_if_not_exists('../resultados')
+    create_folder_if_not_exists('./resultados')
 
-    f = open ('../resultados/resultados_' + file_name + '.txt','a')
+    f = open ('./resultados/resultados_' + file_name + '.txt','a')
     f.write(data_name)
     f.write("\n\n")
 
@@ -196,7 +194,7 @@ def printAnalysisPDF(cerebro, file_name, data_name, initial_value, final_value, 
                                                 size=(8,5), style='line')
 
     # PDF path
-    pdf_path = '../reports/' + data_name + '_' + file_name
+    pdf_path = './reports/' + data_name + '_' + file_name
 
     if from_date != None and to_date != None:
         pdf_path += '_' + from_date + '_' + to_date
@@ -206,5 +204,5 @@ def printAnalysisPDF(cerebro, file_name, data_name, initial_value, final_value, 
     pdf.image(image_path, x=0.0, y=5.8, w=8.0)
     os.remove(image_path)
 
-    create_folder_if_not_exists('../reports')
+    create_folder_if_not_exists('./reports')
     pdf.output(pdf_path)

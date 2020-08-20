@@ -10,27 +10,27 @@ from datetime import datetime, timedelta
 
 from sklearn.preprocessing import StandardScaler
 
-import utils.func_utils as func_utils
+import src.utils.func_utils as func_utils
 
 # Import classes
-from classes.myCerebro import MyCerebro
-from classes.myAnalyzer import MyAnalyzer
-from classes.myBuySell import MyBuySell
+from src.classes.myCerebro import MyCerebro
+from src.classes.myAnalyzer import MyAnalyzer
+from src.classes.myBuySell import MyBuySell
 
-import classes.model as model
-import classes.geneticRepresentation as geneticRepresentation
+import src.classes.model as model
+import src.classes.geneticRepresentation as geneticRepresentation
 
 # Import strategies execution
-import strategies_execution.execution_analysis as execution_analysis
-import strategies_execution.execution_plot as execution_plot
+import src.strategies_execution.execution_analysis as execution_analysis
+import src.strategies_execution.execution_plot as execution_plot
 
 # Import strategies
-from strategies.buy_and_hold_strategy import BuyAndHoldStrategy
-from strategies.classic_strategy import ClassicStrategy
-from strategies.neural_network_strategy import NeuralNetworkStrategy
-from strategies.combined_signal_strategy import CombinedSignalStrategy
-from strategies.one_moving_average_strategy import OneMovingAverageStrategy
-from strategies.moving_averages_cross_strategy import MovingAveragesCrossStrategy
+from src.strategies.buy_and_hold_strategy import BuyAndHoldStrategy
+from src.strategies.classic_strategy import ClassicStrategy
+from src.strategies.neural_network_strategy import NeuralNetworkStrategy
+from src.strategies.combined_signal_strategy import CombinedSignalStrategy
+from src.strategies.one_moving_average_strategy import OneMovingAverageStrategy
+from src.strategies.moving_averages_cross_strategy import MovingAveragesCrossStrategy
 
 import pyswarms as ps
 

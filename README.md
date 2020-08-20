@@ -51,7 +51,6 @@ First we need to activate the virtual environment with:
 
 ```bash
 . venv/bin/activate
-cd src
 ```
 
 You can use the command line program, that can be execute as follow:

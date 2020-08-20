@@ -1,5 +1,5 @@
 import backtrader as bt
-from strategies.log_strategy import LogStrategy
+from src.strategies.log_strategy import LogStrategy
 
 class OneMovingAverageStrategy(LogStrategy):
     """ Buy and Hold Strategy """

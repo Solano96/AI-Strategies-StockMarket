@@ -1,6 +1,6 @@
 import numpy as np
-import utils.indicators as indicators
-import utils.func_utils as func_utils
+import src.utils.indicators as indicators
+import src.utils.func_utils as func_utils
 
 
 class GeneticRepresentation():

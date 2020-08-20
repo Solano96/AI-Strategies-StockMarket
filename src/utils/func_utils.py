@@ -3,7 +3,7 @@ import numpy as np
 import datetime
 import os
 
-import utils.indicators as indicators
+import src.utils.indicators as indicators
 import fix_yahoo_finance as yf
 
 from sklearn.preprocessing import LabelEncoder
