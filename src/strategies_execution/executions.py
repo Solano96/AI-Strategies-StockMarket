@@ -3,8 +3,6 @@
 import pandas as pd
 import numpy as np
 import math
-# Just disables the warning, doesn't enable AVX/FMA
-import os
 import sys, getopt
 from datetime import datetime, timedelta
 
@@ -41,15 +39,8 @@ import matplotlib.pyplot as plt
 
 from numpy.random import seed
 
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter("ignore")
-
 seed(1)
 # Opciones de ejecucion
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 pd.options.mode.chained_assignment = None
 np.set_printoptions(threshold=sys.maxsize)
 
@@ -75,6 +66,7 @@ def execute_strategy(strategy, df, commission):
 
     # Create cerebro instance
     cerebro = MyCerebro()
+
     # Add strategy to cerebro
     cerebro.addstrategy(strategy)
 

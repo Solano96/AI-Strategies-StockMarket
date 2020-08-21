@@ -9,11 +9,6 @@ import sys
 import backtrader as bt
 from fpdf import FPDF
 
-import warnings
-
-if not sys.warnoptions:
-    warnings.simplefilter("ignore")
-
 import src.strategies_execution.execution_plot as execution_plot
 
 

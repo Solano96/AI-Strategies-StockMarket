@@ -2,27 +2,16 @@ import backtrader as bt
 from src.strategies.log_strategy import LogStrategy
 
 class OneMovingAverageStrategy(LogStrategy):
-    """ Buy and Hold Strategy """
-
-    dates = []
-    values = []
-    closes = []
+    """ One Moving Average Strategy """
 
     params = (
         ('maperiod', 15),
-        ('printlog', False),
     )
 
 
     def __init__(self):
-        """ BuyAndHoldStrategy Class Initializer """
-        # Keep a reference to the "close" line in the data[0] dataseries
-        self.dataclose = self.datas[0].close
-
-        # To keep track of pending orders and buy price/commission
-        self.order = None
-        self.buyprice = None
-        self.buycomm = None
+        """ OneMovingAverageStrategy Class Initializer """
+        super().__init__()
 
         # Add a MovingAverageSimple indicator
         self.sma = bt.indicators.SimpleMovingAverage(
@@ -30,12 +19,8 @@ class OneMovingAverageStrategy(LogStrategy):
 
 
     def next(self):
-        # Simply log the closing price of the series from the reference
-        self.log('Close, %.2f' % self.dataclose[0])
-
-        self.values.append(self.broker.getvalue())
-        self.dates.append(self.data.datetime.date())
-        self.closes.append(self.dataclose[0])
+        """ Define logic in each iteration """        
+        self.update_log_values()
 
         # Check if an order is pending ... if yes, we cannot send a 2nd one
         if self.order:
@@ -43,28 +28,12 @@ class OneMovingAverageStrategy(LogStrategy):
 
         # Check if we are in the market
         if not self.position:
-
             # Not yet ... we MIGHT BUY if ...
             if self.dataclose[0] > self.sma[0]:
-                # Log buy order
-                self.log('BUY CREATE, %.2f' % self.dataclose[0])
-
-                buy_price = self.data.close[0] * (1+0.002)
-                buy_size = self.broker.get_cash() / buy_price
-
-                # Keep track of the created order to avoid a 2nd order
-                self.order = self.buy(size = buy_size)
-
+                self.send_buy_order()
         else:
-
             if self.dataclose[0] < self.sma[0]:
-                # Log sell order
-                self.log('SELL CREATE, %.2f' % self.dataclose[0])
-
-                sell_size = self.broker.getposition(data = self.datas[0]).size
-
-                # Keep track of the created order to avoid a 2nd order
-                self.order = self.sell(size = sell_size)
+                self.send_sell_order()
 
 
     def stop(self):

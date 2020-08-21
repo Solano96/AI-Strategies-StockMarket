@@ -1,14 +1,29 @@
 import backtrader as bt
+import logging
 
 
 class LogStrategy(bt.Strategy):
-    """ Buy and Hold Strategy """
+    """ Log Strategy """
+
+    dates = []
+    values = []
+    closes = []
+
+
+    def __init__(self):
+        """ LogStrategy Class Initializer """
+        # Keep a reference to the "close" line in the data[0] dataseries
+        self.dataclose = self.datas[0].close
+        # To keep track of pending orders and buy price/commission
+        self.order = None
+        self.buyprice = None
+        self.buycomm = None
+
 
     def log(self, txt, dt=None, doprint=False):
         ''' Logging function fot this strategy'''
-        if doprint or self.params.printlog:
-            dt = dt or self.datas[0].datetime.date(0)
-            print('%s, %s' % (dt.isoformat(), txt))
+        dt = dt or self.datas[0].datetime.date(0)
+        logging.info('Date: %s, %s' % (dt.isoformat(), txt))
 
 
     def notify_order(self, order):
@@ -49,3 +64,37 @@ class LogStrategy(bt.Strategy):
 
         self.log('OPERATION PROFIT, GROSS %.2f, NET %.2f' %
                  (trade.pnl, trade.pnlcomm))
+
+
+    def update_log_values(self):
+        """ Method to update some neccesary values to plot charts after execution"""
+        # Simply log the closing price of the series from the reference
+        self.log('Close, %.2f' % self.dataclose[0])
+
+        self.values.append(self.broker.getvalue())
+        self.dates.append(self.data.datetime.date())
+        self.closes.append(self.dataclose[0])
+
+
+    def send_buy_order(self):
+        """ Method to send a buy order and log the order """
+        # Log buy order
+        self.log('BUY CREATE, %.2f' % self.dataclose[0])
+
+        #buy_size = self.broker.get_cash() / self.datas[0].open
+        buy_price = self.data.close[0] * (1+0.002)
+        buy_size = self.broker.get_cash() / buy_price
+
+        # Keep track of the created order to avoid a 2nd order
+        self.order = self.buy(size = buy_size)
+
+
+    def send_sell_order(self):
+        """ Method to send a sell order and log the order """
+        # Log sell order
+        self.log('SELL CREATE, %.2f' % self.dataclose[0])
+
+        sell_size = self.broker.getposition(data = self.datas[0]).size
+
+        # Keep track of the created order to avoid a 2nd order
+        self.order = self.sell(size = sell_size)

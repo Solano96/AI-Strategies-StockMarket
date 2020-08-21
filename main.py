@@ -10,6 +10,11 @@ import src.utils.func_utils as func_utils
 from src.strategies_execution.executions import *
 import src.strategies_execution.execution_plot as execution_plot
 
+import warnings
+
+if not sys.warnoptions:
+    warnings.simplefilter("ignore")
+
 
 def main(argv):
     strategy = ''
@@ -18,6 +23,7 @@ def main(argv):
 
     s_train, e_train = '2009-12-22', '2011-12-21'
     s_test, e_test = '2011-12-22', '2013-12-22'
+
 
     try:
         opts, args = getopt.getopt(argv, 'hs:q:f:t:v', ['help', 'strategy=', 'quote=', 'from-date=', 'to-date=',
@@ -35,7 +41,7 @@ def main(argv):
             print('\nUSAGE')
             print('\n\tmain.py -s <strategy> -q <quote>')
             print('\nOPTIONS')
-            print('\n\t-s, --strategy\tSelect a strategy between: buy-and-hold | classic | one-moving-average | neural-network | combined-signal-pso | all.')
+            print('\n\t-s, --strategy\tSelect a strategy between: buy-and-hold | classic | one-ma | two-ma | neural-network | combined-signal-pso | all.')
             print('\n\t-q, --quote\tUse as quote any market abbreviation recognized by yahoo finance. Examples: AAPL | FB | GOOGL | AMZN | ...')
             print('\n\t-f, --from-date\tStart date in simulation.')
             print('\n\t-t, --to-date\tEnd date in simulation.')
