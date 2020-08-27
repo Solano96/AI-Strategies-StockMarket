@@ -1,1 +1,15 @@
 repository: tomjoht/documentation-theme-jekyll
+
+entries:
+- title: sidebar
+  product: AI Strategies StockMarket
+  version: 1.0
+  folders:
+  - title: Get started
+    url: /README.md
+    output: web, pdf
+    type: homepage
+
+  - title: Neural Networks
+    url: /docs/neural_network.md
+    output: web, pdf
