@@ -3,7 +3,13 @@ import logging
 
 
 class LogStrategy(bt.Strategy):
-    """ Log Strategy """
+    """
+    Log Strategy Class
+
+    This class is used to log all about simulation process.
+
+    
+    """
 
     dates = []
     values = []
@@ -20,13 +26,18 @@ class LogStrategy(bt.Strategy):
         self.buycomm = None
 
 
-    def log(self, txt, dt=None, doprint=False):
+    def log(self, txt, dt=None):
         ''' Logging function fot this strategy'''
         dt = dt or self.datas[0].datetime.date(0)
         logging.info('Date: %s, %s' % (dt.isoformat(), txt))
 
 
     def notify_order(self, order):
+        '''
+        Notify if an order has been completed or Canceled. In case the order is completed,
+        the details of the operation will be notified
+        '''
+
         if order.status in [order.Submitted, order.Accepted]:
             # Buy/Sell order submitted/accepted to/by broker - Nothing to do
             return
@@ -59,6 +70,8 @@ class LogStrategy(bt.Strategy):
 
 
     def notify_trade(self, trade):
+        ''' Notify trade profit gross and net'''
+
         if not trade.isclosed:
             return
 

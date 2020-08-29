@@ -43,4 +43,4 @@ class MovingAveragesCrossStrategy(LogStrategy):
 
     def stop(self):
         self.log('(MA short Period %2d, MA long Period %2d) Ending Value %.2f' %
-                 (self.params.ma_short, self.params.ma_long, self.broker.getvalue()), doprint=True)
+                 (self.params.ma_short, self.params.ma_long, self.broker.getvalue()))

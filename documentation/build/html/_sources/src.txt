@@ -1,0 +1,11 @@
+src package
+==============
+
+Src contents
+---------------
+
+.. automodule:: src
+    :members:
+    :undoc-members:
+    :inherited-members:
+    :show-inheritance:

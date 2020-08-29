@@ -12,7 +12,11 @@ The network is said to have total connectivity because the neurons in one layer 
 
 ## Architecture of our model
 
-The implemented neural network consists of 6 layers. The first layer corresponds to the input layer and has a total of 36 nodes. The last layer is the output layer which has a single node, whose output will predict the market trend depending on whether the output value is closer to -1 or +1. The inner layers correspond to the hidden layers of the network and have 128, 64, 16 and 8 nodes respectively. 
+The implemented neural network consists of 6 layers. The first layer corresponds to the input layer and has a total of 36 nodes. The last layer is the output layer which has a single node, whose output will predict the market trend depending on whether the output value is closer to -1 or +1. The inner layers correspond to the hidden layers of the network and have 128, 64, 16 and 8 nodes respectively.
+
+<img src="docs/img/neural_network.png"
+     style="float: left; margin-right: 10px;" />
+
 The input values of the neural network correspond to the following attributes.
 
 * Open, close, low, high and volume.

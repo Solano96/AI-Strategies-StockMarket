@@ -73,16 +73,7 @@ python3 main.py --strategy neural-network --quote AAPL --from-date 2011-12-22 --
 
 PD: You can use as data name any market abbreviation recognized by yahoo finance.
 
-After the execution you can find the results in 'resultados' folder with the different strategies and you can see the graph of simulation in img folder.
-
-The other alternative is to use the version with interface, this version can be execute with the following command:
-
-```
-python3 interface.py
-```
-
-<img src="docs/interfaz.png"
-     style="float: left; margin-right: 10px;" />
+After the execution you can find the results in 'reports' where you can find a PDF report with a summary of the execution.
 
 ## Author ✒️
 

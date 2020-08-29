@@ -1,0 +1,11 @@
+main
+==============
+
+main contents
+---------------
+
+.. automodule:: main
+    :members:
+    :undoc-members:
+    :inherited-members:
+    :show-inheritance:

@@ -19,7 +19,7 @@ class OneMovingAverageStrategy(LogStrategy):
 
 
     def next(self):
-        """ Define logic in each iteration """        
+        """ Define logic in each iteration """
         self.update_log_values()
 
         # Check if an order is pending ... if yes, we cannot send a 2nd one
@@ -38,4 +38,4 @@ class OneMovingAverageStrategy(LogStrategy):
 
     def stop(self):
         self.log('(MA Period %2d) Ending Value %.2f' %
-                 (self.params.maperiod, self.broker.getvalue()), doprint=True)
+                 (self.params.maperiod, self.broker.getvalue()))

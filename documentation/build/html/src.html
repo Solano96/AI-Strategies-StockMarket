@@ -1,0 +1,524 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>src package &#8212; documentación de AI Strategies - 1</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="top" title="documentación de AI Strategies - 1" href="index.html" />
+    <link rel="prev" title="Welcome to AI Strategies’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="src-package">
+<h1>src package<a class="headerlink" href="#src-package" title="Enlazar permanentemente con este título">¶</a></h1>
+<div class="section" id="module-src">
+<span id="src-contents"></span><h2>Src contents<a class="headerlink" href="#module-src" title="Enlazar permanentemente con este título">¶</a></h2>
+<p>A Sphinx example and cheat sheet.</p>
+<div class="section" id="documenting-python-code">
+<h3>Documenting Python Code<a class="headerlink" href="#documenting-python-code" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>For documenting Python code, see <code class="docutils literal"><span class="pre">module/__init__.py</span></code> or the code example below:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">AClass</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class docstring, with reference to the :mod:`module`, or another class</span>
+<span class="sd">    :class:`module.AnotherClass` and its function :func:`module.AnotherClass.foo`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="k">class</span> <span class="nc">AnotherClass</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Another class&#39; docstring.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A method&#39;s docstring with parameters and return value.</span>
+<span class="sd">        </span>
+<span class="sd">        Use all the cool Sphinx capabilities in this description, e.g. to give</span>
+<span class="sd">        usage examples ...</span>
+<span class="sd">        </span>
+<span class="sd">        :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; another_class.foo(&#39;&#39;, AClass())        </span>
+<span class="sd">        </span>
+<span class="sd">        :param arg1: first argument</span>
+<span class="sd">        :type arg1: string</span>
+<span class="sd">        :param arg2: second argument</span>
+<span class="sd">        :type arg2: :class:`module.AClass`</span>
+<span class="sd">        :return: something</span>
+<span class="sd">        :rtype: string</span>
+<span class="sd">        :raises: TypeError</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span> <span class="o">+</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="comments">
+<h3>Comments<a class="headerlink" href="#comments" title="Enlazar permanentemente con este título">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span></span>.. comment This is a comment!
+</pre></div>
+</div>
+</div>
+<div class="section" id="basic-syntax">
+<h3>Basic Syntax<a class="headerlink" href="#basic-syntax" title="Enlazar permanentemente con este título">¶</a></h3>
+<p><em>italic</em></p>
+<p><strong>bold</strong></p>
+<p><code class="docutils literal"><span class="pre">verbatim</span> <span class="pre">with</span> <span class="pre">special</span> <span class="pre">characters</span> <span class="pre">such</span> <span class="pre">as</span> <span class="pre">*,</span> <span class="pre">also</span> <span class="pre">useful</span> <span class="pre">for</span> <span class="pre">inline</span> <span class="pre">code</span> <span class="pre">examples</span></code></p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>*italic*
+
+**bold**
+
+``verbatim with special characters such as *, also useful for inline code examples``
+</pre></div>
+</div>
+</div>
+<div class="section" id="links-and-downloads">
+<h3>Links and Downloads<a class="headerlink" href="#links-and-downloads" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>Hyperlink: <a class="reference external" href="https://davidstutz.de">David Stutz</a></p>
+<p>Download: <code class="xref download docutils literal"><span class="pre">__init__.py</span></code></p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>Hyperlink: `David Stutz &lt;https://davidstutz.de&gt;`_
+
+Download: :download:`__init__.py &lt;../../module/__init__.py&gt;`
+</pre></div>
+</div>
+</div>
+<div class="section" id="headings">
+<h3>Headings<a class="headerlink" href="#headings" title="Enlazar permanentemente con este título">¶</a></h3>
+<div class="section" id="level-2">
+<h4>Level 2<a class="headerlink" href="#level-2" title="Enlazar permanentemente con este título">¶</a></h4>
+<div class="section" id="level-3">
+<h5>Level 3<a class="headerlink" href="#level-3" title="Enlazar permanentemente con este título">¶</a></h5>
+<div class="section" id="level-4">
+<h6>Level 4<a class="headerlink" href="#level-4" title="Enlazar permanentemente con este título">¶</a></h6>
+<div class="section" id="level-5">
+<h7>Level 5<a class="headerlink" href="#level-5" title="Enlazar permanentemente con este título">¶</a></h7>
+<p>Note that level 5 does not impose any styling, but is added to the table of contents
+on the left.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Headings</span>
+<span class="c1">########</span>
+
+<span class="n">Level</span> <span class="mi">2</span>
+<span class="o">*******</span>
+
+<span class="n">Level</span> <span class="mi">3</span>
+<span class="o">=======</span>
+
+<span class="n">Level</span> <span class="mi">4</span>
+<span class="o">-------</span>
+
+<span class="n">Level</span> <span class="mi">5</span>
+<span class="o">^^^^^^^</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="lists">
+<h3>Lists<a class="headerlink" href="#lists" title="Enlazar permanentemente con este título">¶</a></h3>
+<ul class="simple">
+<li>Item 1</li>
+<li>Item 2</li>
+<li>Item 3</li>
+<li>Multi-
+line item</li>
+</ul>
+<ol class="arabic simple">
+<li>Item 1</li>
+<li>Item 2</li>
+<li>Item 3</li>
+<li>Item 4</li>
+<li>Item 5</li>
+</ol>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="n">Item</span> <span class="mi">1</span>
+<span class="o">*</span> <span class="n">Item</span> <span class="mi">2</span>
+<span class="o">*</span> <span class="n">Item</span> <span class="mi">3</span>
+
+<span class="o">*</span> <span class="n">Multi</span><span class="o">-</span>
+  <span class="n">line</span> <span class="n">item</span>
+
+<span class="mf">1.</span> <span class="n">Item</span> <span class="mi">1</span>
+<span class="mf">2.</span> <span class="n">Item</span> <span class="mi">2</span>
+<span class="mf">3.</span> <span class="n">Item</span> <span class="mi">3</span>
+
+<span class="c1">#. Item 4</span>
+<span class="c1">#. Item 5</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="tables">
+<h3>Tables<a class="headerlink" href="#tables" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>Complex variant:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Header 1</th>
+<th class="head">Header 2</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Cell 1.1</td>
+<td>Cell 1.2</td>
+</tr>
+<tr class="row-odd"><td colspan="2">Multi-column</td>
+</tr>
+<tr class="row-even"><td>Cell 3.1</td>
+<td rowspan="2">Multi-row</td>
+</tr>
+<tr class="row-odd"><td>Cell 4.1</td>
+</tr>
+</tbody>
+</table>
+<p>Another, simpler variant:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Header 1</th>
+<th class="head">Header 2</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Cell 1.1</td>
+<td>Cell 1.2</td>
+</tr>
+<tr class="row-odd"><td>Cell 2.1</td>
+<td>Cell 2.2</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="o">+------------+------------+</span>
+<span class="o">|</span> <span class="n">Header</span> <span class="mi">1</span>   <span class="o">|</span> <span class="n">Header</span> <span class="mi">2</span>   <span class="o">|</span>
+<span class="o">+============+============+</span>
+<span class="o">|</span> <span class="n">Cell</span> <span class="mf">1.1</span>   <span class="o">|</span> <span class="n">Cell</span> <span class="mf">1.2</span>   <span class="o">|</span>
+<span class="o">+------------+------------+</span>
+<span class="o">|</span> <span class="n">Multi</span><span class="o">-</span><span class="n">column</span>            <span class="o">|</span>
+<span class="o">+------------+------------+</span>
+<span class="o">|</span> <span class="n">Cell</span> <span class="mf">3.1</span>   <span class="o">|</span> <span class="n">Multi</span><span class="o">-</span><span class="n">row</span>  <span class="o">|</span>
+<span class="o">+------------+</span>            <span class="o">|</span>
+<span class="o">|</span> <span class="n">Cell</span> <span class="mf">4.1</span>   <span class="o">|</span>            <span class="o">|</span>
+<span class="o">+------------+------------+</span>
+
+<span class="o">========</span> <span class="o">========</span>
+<span class="n">Header</span> <span class="mi">1</span> <span class="n">Header</span> <span class="mi">2</span>
+<span class="o">========</span> <span class="o">========</span>
+<span class="n">Cell</span> <span class="mf">1.1</span> <span class="n">Cell</span> <span class="mf">1.2</span>
+<span class="n">Cell</span> <span class="mf">2.1</span> <span class="n">Cell</span> <span class="mf">2.2</span>
+<span class="o">========</span> <span class="o">========</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="boxes">
+<h3>Boxes<a class="headerlink" href="#boxes" title="Enlazar permanentemente con este título">¶</a></h3>
+<div class="admonition seealso">
+<p class="first admonition-title">Ver también</p>
+<p class="last">See also box ...</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Advertencia</p>
+<p class="last">Warning box ...</p>
+</div>
+</div>
+<div class="section" id="code">
+<h3>Code<a class="headerlink" href="#code" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>Simple code box:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;done ...&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Line numbers and language option:</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;done ...&#39;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="math">
+<h3>Math<a class="headerlink" href="#math" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>Note that backslashes need to be escaped!</p>
+<p>If the math isn&#8217;t rendered directly, refresh using Shift + F5 or Ctrl + Shift + R (in most browsers).</p>
+<p>Inline: <span class="math">\(\alpha\)</span></p>
+<p>Block:</p>
+<div class="math">
+\[\sum_{i = 1}^n w_i x_i\]</div>
+<div class="highlight-latex"><div class="highlight"><pre><span></span>Inline: :math:`<span class="k">\alpha</span>`
+
+Block:
+
+.. math::
+
+    <span class="k">\sum</span><span class="nb">_{</span>i = 1<span class="nb">}^</span>n w<span class="nb">_</span>i x<span class="nb">_</span>i
+</pre></div>
+</div>
+</div>
+<div class="section" id="images-and-figures">
+<h3>Images and Figures<a class="headerlink" href="#images-and-figures" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>Image:</p>
+<img alt="../images/pocoo.png" src="../images/pocoo.png" />
+<p>Figure:</p>
+<div class="align-center figure" id="id3">
+<img alt="Pocoo" src="../images/pocoo.png" />
+<p class="caption"><span class="caption-text">Pocoo figure ...</span></p>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Image</span><span class="p">:</span>
+
+<span class="o">..</span> <span class="n">image</span><span class="p">::</span> <span class="o">../</span><span class="n">images</span><span class="o">/</span><span class="n">pocoo</span><span class="o">.</span><span class="n">png</span>
+
+<span class="n">Figure</span><span class="p">:</span>
+
+<span class="o">..</span> <span class="n">figure</span><span class="p">::</span> <span class="o">../</span><span class="n">images</span><span class="o">/</span><span class="n">pocoo</span><span class="o">.</span><span class="n">png</span>
+    <span class="p">:</span><span class="n">align</span><span class="p">:</span> <span class="n">center</span>
+    <span class="p">:</span><span class="n">alt</span><span class="p">:</span> <span class="n">Pocoo</span>
+    <span class="p">:</span><span class="n">figclass</span><span class="p">:</span> <span class="n">align</span><span class="o">-</span><span class="n">center</span>
+    
+    <span class="n">Pocoo</span> <span class="n">figure</span> <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="misc-elements">
+<h3>Misc Elements<a class="headerlink" href="#misc-elements" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>Topic:</p>
+<div class="topic">
+<p class="topic-title">My Topic</p>
+<p>My topic text ...</p>
+</div>
+<p>Sidebar:</p>
+<div class="sidebar">
+<p class="first sidebar-title">My Sidebar</p>
+<p class="last">My sidebar text ...</p>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">topic</span><span class="p">::</span> <span class="n">My</span> <span class="n">Topic</span>
+
+    <span class="n">My</span> <span class="n">topic</span> <span class="n">text</span> <span class="o">...</span>
+
+<span class="o">..</span> <span class="n">sidebar</span><span class="p">::</span> <span class="n">My</span> <span class="n">Sidebar</span>
+    
+    <span class="n">My</span> <span class="n">sidebar</span> <span class="n">text</span> <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="citations">
+<h3>Citations<a class="headerlink" href="#citations" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>Citation in text <a class="reference internal" href="#stutz2015" id="id1">[Stutz2015]</a></p>
+<table class="docutils citation" frame="void" id="stutz2015" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[Stutz2015]</a></td><td><ol class="first last upperalpha simple" start="4">
+<li>Stutz. Superpixel Segmentation: An Evaluation. GCPR, 2015.</li>
+</ol>
+</td></tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Citation</span> <span class="ow">in</span> <span class="n">text</span> <span class="p">[</span><span class="n">Stutz2015</span><span class="p">]</span><span class="n">_</span>
+
+<span class="o">..</span> <span class="p">[</span><span class="n">Stutz2015</span><span class="p">]</span> <span class="n">D</span><span class="o">.</span> <span class="n">Stutz</span><span class="o">.</span> <span class="n">Superpixel</span> <span class="n">Segmentation</span><span class="p">:</span> <span class="n">An</span> <span class="n">Evaluation</span><span class="o">.</span> <span class="n">GCPR</span><span class="p">,</span> <span class="mf">2015.</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="footnotes">
+<h3>Footnotes<a class="headerlink" href="#footnotes" title="Enlazar permanentemente con este título">¶</a></h3>
+<p>The footnote section needs to be added at the end ...</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Footnote</span> <span class="p">[</span><span class="c1">#f]_</span>
+
+<span class="o">..</span> <span class="n">comment</span><span class="p">::</span> <span class="o">...</span>
+
+<span class="o">..</span> <span class="n">rubric</span><span class="p">::</span> <span class="n">Footnotes</span>
+
+<span class="o">..</span> <span class="p">[</span><span class="c1">#f] Footenote text ...</span>
+</pre></div>
+</div>
+<p>Footnote <a class="footnote-reference" href="#f" id="id2">[1]</a></p>
+<p class="rubric">Footnotes</p>
+<table class="docutils footnote" frame="void" id="f" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>Footenote text ...</td></tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="src.AClass">
+<em class="property">class </em><code class="descclassname">src.</code><code class="descname">AClass</code><a class="headerlink" href="#src.AClass" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Clases base: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Class docstring, with reference to the <code class="xref py py-mod docutils literal"><span class="pre">module</span></code>, or another class
+<code class="xref py py-class docutils literal"><span class="pre">module.AnotherClass</span></code> and its function <code class="xref py py-func docutils literal"><span class="pre">module.AnotherClass.foo()</span></code>.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="src.AnotherClass">
+<em class="property">class </em><code class="descclassname">src.</code><code class="descname">AnotherClass</code><a class="headerlink" href="#src.AnotherClass" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Clases base: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Another class&#8217; docstring.</p>
+<dl class="method">
+<dt id="src.AnotherClass.foo">
+<code class="descname">foo</code><span class="sig-paren">(</span><em>arg1</em>, <em>arg2</em><span class="sig-paren">)</span><a class="headerlink" href="#src.AnotherClass.foo" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>A method&#8217;s docstring with parameters and return value.</p>
+<p>Use all the cool Sphinx capabilities in this description, e.g. to give
+usage examples ...</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">another_class</span><span class="o">.</span><span class="n">foo</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">AClass</span><span class="p">())</span>        
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><ul class="first simple">
+<li><strong>arg1</strong> (<em>string</em>) &#8211; first argument</li>
+<li><strong>arg2</strong> (<code class="xref py py-class docutils literal"><span class="pre">module.AClass</span></code>) &#8211; second argument</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"><p class="first">something</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Tipo del valor devuelto:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><p class="first">string</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">TypeError</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Tabla de Contenidos</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">src package</a><ul>
+<li><a class="reference internal" href="#module-src">Src contents</a><ul>
+<li><a class="reference internal" href="#documenting-python-code">Documenting Python Code</a></li>
+<li><a class="reference internal" href="#comments">Comments</a></li>
+<li><a class="reference internal" href="#basic-syntax">Basic Syntax</a></li>
+<li><a class="reference internal" href="#links-and-downloads">Links and Downloads</a></li>
+<li><a class="reference internal" href="#headings">Headings</a><ul>
+<li><a class="reference internal" href="#level-2">Level 2</a><ul>
+<li><a class="reference internal" href="#level-3">Level 3</a><ul>
+<li><a class="reference internal" href="#level-4">Level 4</a><ul>
+<li><a class="reference internal" href="#level-5">Level 5</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lists">Lists</a></li>
+<li><a class="reference internal" href="#tables">Tables</a></li>
+<li><a class="reference internal" href="#boxes">Boxes</a></li>
+<li><a class="reference internal" href="#code">Code</a></li>
+<li><a class="reference internal" href="#math">Math</a></li>
+<li><a class="reference internal" href="#images-and-figures">Images and Figures</a></li>
+<li><a class="reference internal" href="#misc-elements">Misc Elements</a></li>
+<li><a class="reference internal" href="#citations">Citations</a></li>
+<li><a class="reference internal" href="#footnotes">Footnotes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="capítulo anterior">Welcome to AI Strategies&#8217;s documentation!</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Esta página</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/src.txt"
+            rel="nofollow">Mostrar el código</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Búsqueda rápida</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Ir a" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Francisco Solano.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.8</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/src.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
