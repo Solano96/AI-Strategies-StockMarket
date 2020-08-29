@@ -11,10 +11,8 @@ venv
 # Specific things
 resultados
 data
-img
+/img
 reports
 app.desktop
 src/report.log
 report.log
-
-
