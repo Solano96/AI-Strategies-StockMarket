@@ -13,3 +13,5 @@ entries:
   - title: Neural Networks
     url: /docs/neural_network.md
     output: web, pdf
+
+theme: jekyll-theme-cayman
