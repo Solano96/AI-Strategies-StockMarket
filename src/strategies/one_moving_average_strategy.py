@@ -30,10 +30,10 @@ class OneMovingAverageStrategy(LogStrategy):
         if not self.position:
             # Not yet ... we MIGHT BUY if ...
             if self.dataclose[0] > self.sma[0]:
-                self.send_buy_order()
+                self.buy()
         else:
             if self.dataclose[0] < self.sma[0]:
-                self.send_sell_order()
+                self.sell()
 
 
     def stop(self):

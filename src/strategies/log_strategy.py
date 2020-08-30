@@ -1,5 +1,6 @@
 import backtrader as bt
 import logging
+import math
 
 
 class LogStrategy(bt.Strategy):
@@ -8,7 +9,7 @@ class LogStrategy(bt.Strategy):
 
     This class is used to log all about simulation process.
 
-    
+
     """
 
     dates = []
@@ -87,27 +88,3 @@ class LogStrategy(bt.Strategy):
         self.values.append(self.broker.getvalue())
         self.dates.append(self.data.datetime.date())
         self.closes.append(self.dataclose[0])
-
-
-    def send_buy_order(self):
-        """ Method to send a buy order and log the order """
-        # Log buy order
-        self.log('BUY CREATE, %.2f' % self.dataclose[0])
-
-        #buy_size = self.broker.get_cash() / self.datas[0].open
-        buy_price = self.data.close[0] * (1+0.002)
-        buy_size = self.broker.get_cash() / buy_price
-
-        # Keep track of the created order to avoid a 2nd order
-        self.order = self.buy(size = buy_size)
-
-
-    def send_sell_order(self):
-        """ Method to send a sell order and log the order """
-        # Log sell order
-        self.log('SELL CREATE, %.2f' % self.dataclose[0])
-
-        sell_size = self.broker.getposition(data = self.datas[0]).size
-
-        # Keep track of the created order to avoid a 2nd order
-        self.order = self.sell(size = sell_size)

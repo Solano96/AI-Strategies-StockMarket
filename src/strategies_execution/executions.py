@@ -14,6 +14,7 @@ import src.utils.func_utils as func_utils
 from src.classes.myCerebro import MyCerebro
 from src.classes.myAnalyzer import MyAnalyzer
 from src.classes.myBuySell import MyBuySell
+from src.classes.maxRiskSizer import MaxRiskSizer
 
 import src.classes.model as model
 import src.classes.geneticRepresentation as geneticRepresentation
@@ -73,6 +74,9 @@ def execute_strategy(strategy, df, commission):
     # Feed cerebro with historical data
     data = bt.feeds.PandasData(dataname = df)
     cerebro.adddata(data)
+
+    # Add sizer
+    cerebro.addsizer(MaxRiskSizer, risk=1.0)
 
     # Add analyzers to cerebro
     cerebro.addanalyzer(bt.analyzers.DrawDown, _name="drawDown")
