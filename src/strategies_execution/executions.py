@@ -50,7 +50,7 @@ def print_execution_name(execution_name):
     print("\n --------------- ", execution_name, " --------------- \n")
 
 
-def execute_strategy(strategy, df, commission):
+def execute_strategy(strategy, df, commission, info, training_params=None, **kwargs):
     """
     Execute strategy on data history contained in df
     :param strategy: buying and selling strategy to be used
@@ -58,18 +58,13 @@ def execute_strategy(strategy, df, commission):
     :param commission: commission to be paid on each operation
     :returns:
         - cerebro - execution engine
-        - initial_value - initial value of the portfolio
-        - final_value - final value of the portfolio
-        - ta - trade analyzer instance
-        - dd - drawdown analyzer instance
-        - ma - myAnalyzer instance
     """
 
     # Create cerebro instance
     cerebro = MyCerebro()
 
     # Add strategy to cerebro
-    cerebro.addstrategy(strategy)
+    strategy_index = cerebro.addstrategy(strategy, **kwargs)
 
     # Feed cerebro with historical data
     data = bt.feeds.PandasData(dataname = df)
@@ -106,7 +101,43 @@ def execute_strategy(strategy, df, commission):
     ta = strats[0].analyzers.tradeAnalyzer.get_analysis()
     ma = strats[0].analyzers.myAnalyzer.get_analysis()
 
-    return cerebro, initial_value, final_value, ta, dd, ma
+    # Get analysis from analyzers
+    drawDownAnalyzer = strats[0].analyzers.drawDown.get_analysis()
+    tradeAnalyzer = strats[0].analyzers.tradeAnalyzer.get_analysis()
+    myAnalyzer = strats[0].analyzers.myAnalyzer.get_analysis()
+
+    avg_profit_trade = round(myAnalyzer.avg.profit_trade,2)
+    avg_loss_trade = round(myAnalyzer.avg.loss_trade,2)
+
+    avg_profit_loss = 'NaN'
+
+    if avg_loss_trade != 0:
+        avg_profit_loss = round((-1)*avg_profit_trade/avg_loss_trade,2)
+
+    metrics = {
+        'Inicial': initial_value,
+        'Final': final_value,
+        'Ganancia(%)': (final_value-initial_value)/initial_value,
+        'Ganancias': round(final_value-initial_value,2),
+        'Max DD': round((-1.0)*drawDownAnalyzer.max.drawdown,2),
+        'Trades total': int(myAnalyzer.trades.total),
+        'Trades+': int(myAnalyzer.trades.positives),
+        'Trades-': int(myAnalyzer.trades.negatives),
+        'Avg trade': round(myAnalyzer.avg.trade,2),
+        'Avg profit': avg_profit_trade,
+        'Avg loss': avg_loss_trade,
+        'Profit/Loss': avg_profit_loss
+    }
+
+    params = kwargs
+
+    if len(params) == 0:
+        params = dict(strategy.params._getitems())
+
+    execution_analysis.printAnalysis(info, params, metrics, training_params)
+    execution_analysis.printAnalysisPDF(cerebro, info, params, metrics, training_params)
+
+    return cerebro
 
 
 def execute_buy_and_hold_strategy(df, commission, data_name, start_date, end_date):
@@ -124,16 +155,22 @@ def execute_buy_and_hold_strategy(df, commission, data_name, start_date, end_dat
 
     print_execution_name("Estrategia: comprar y mantener")
 
+    strategy_name = 'comprar_y_mantener'
+
+    info = {
+        'Mercado': data_name,
+        'Estrategia': strategy_name,
+        'Fecha inicial': start_date,
+        'Fecha final': end_date
+    }
+
     df = df[start_date:end_date]
 
     BH_Strategy =  BuyAndHoldStrategy
-    BH_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(BH_Strategy, df, commission)
+    BH_Cerebro = execute_strategy(BH_Strategy, df, commission, info)
 
-    # Save results
-    execution_analysis.printAnalysis('comprar_y_mantener', data_name, initial_value, final_value, ta, dd, ma)
-    execution_analysis.printAnalysisPDF(BH_Cerebro, 'comprar_y_mantener', data_name, initial_value, final_value, ta, dd, ma, start_date, end_date)
     # Save simulation chart
-    execution_plot.plot_simulation(BH_Cerebro, 'comprar_y_mantener', data_name, start_date, end_date)
+    execution_plot.plot_simulation(BH_Cerebro, strategy_name, data_name, start_date, end_date)
 
     return BH_Cerebro, BH_Strategy
 
@@ -153,16 +190,22 @@ def execute_classic_strategy(df, commission, data_name, start_date, end_date):
 
     print_execution_name("Estrategia: clásica")
 
+    strategy_name = 'estrategia_clasica'
+
+    info = {
+        'Mercado': data_name,
+        'Estrategia': strategy_name,
+        'Fecha inicial': start_date,
+        'Fecha final': end_date
+    }
+
     df = df[start_date:end_date]
 
     Classic_Strategy =  ClassicStrategy
-    Classic_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(Classic_Strategy, df, commission)
+    Classic_Cerebro = execute_strategy(Classic_Strategy, df, commission, info)
 
-    # Save results
-    execution_analysis.printAnalysis('estrategia_clasica', data_name, initial_value, final_value, ta, dd, ma)
-    execution_analysis.printAnalysisPDF(Classic_Cerebro, 'estrategia_clasica', data_name, initial_value, final_value, ta, dd, ma, start_date, end_date)
     # Save simulation chart
-    execution_plot.plot_simulation(Classic_Cerebro, 'estrategia_clasica', data_name, start_date, end_date)
+    execution_plot.plot_simulation(Classic_Cerebro, strategy_name, data_name, start_date, end_date)
 
     return Classic_Cerebro, Classic_Strategy
 
@@ -182,15 +225,20 @@ def execute_one_moving_average_strategy(df, commission, data_name, start_date, e
 
     print_execution_name("Estrategia: media móvil")
 
+    strategy_name = 'estrategia_media_movil'
+
+    info = {
+        'Mercado': data_name,
+        'Estrategia': strategy_name,
+        'Fecha inicial': start_date,
+        'Fecha final': end_date
+    }
+
     df = df[start_date:end_date]
 
     OMA_Strategy =  OneMovingAverageStrategy
-    OMA_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(OMA_Strategy, df, commission)
+    OMA_Cerebro = execute_strategy(OMA_Strategy, df, commission, info)
 
-    # Save results
-    strategy_name = 'estrategia_media_movil'
-    execution_analysis.printAnalysis(strategy_name, data_name, initial_value, final_value, ta, dd, ma)
-    execution_analysis.printAnalysisPDF(OMA_Cerebro, strategy_name, data_name, initial_value, final_value, ta, dd, ma, start_date, end_date)
     # Save simulation chart
     execution_plot.plot_simulation(OMA_Cerebro, strategy_name, data_name, start_date, end_date)
 
@@ -212,22 +260,27 @@ def execute_moving_averages_cross_strategy(df, commission, data_name, start_date
 
     print_execution_name("Estrategia: cruce de medias móviles")
 
+    strategy_name = 'estrategia_cruce_medias_moviles'
+
+    info = {
+        'Mercado': data_name,
+        'Estrategia': strategy_name,
+        'Fecha inicial': start_date,
+        'Fecha final': end_date
+    }
+
     df = df[start_date:end_date]
 
     MAC_Strategy =  MovingAveragesCrossStrategy
-    MAC_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(MAC_Strategy, df, commission)
+    MAC_Cerebro = execute_strategy(MAC_Strategy, df, commission, info)
 
-    # Save results
-    strategy_name = 'estrategia_cruce_medias_moviles'
-    execution_analysis.printAnalysis(strategy_name, data_name, initial_value, final_value, ta, dd, ma)
-    execution_analysis.printAnalysisPDF(MAC_Cerebro, strategy_name, data_name, initial_value, final_value, ta, dd, ma, start_date, end_date)
     # Save simulation chart
     execution_plot.plot_simulation(MAC_Cerebro, strategy_name, data_name, start_date, end_date)
 
     return MAC_Cerebro, MAC_Strategy
 
 
-def execute_neural_network_strategy(df, options, commission, data_name, s_test, e_test):
+def execute_neural_network_strategy(df, options, commission, data_name, start_date, end_date):
     """
     Execute neural network strategy on data history contained in df
     :param df: dataframe with historical data
@@ -247,13 +300,22 @@ def execute_neural_network_strategy(df, options, commission, data_name, s_test, 
 
     print_execution_name("Estrategia: red neuronal")
 
+    strategy_name = 'red_neuronal'
+
+    info = {
+        'Mercado': data_name,
+        'Estrategia': strategy_name,
+        'Fecha inicial': start_date,
+        'Fecha final': end_date
+    }
+
     # Get parameters
     gain = options['gain']
     loss = options['loss']
     n_day = options['n_day']
     epochs = options['epochs']
 
-    s_test_date = datetime.strptime(s_test, '%Y-%m-%d')
+    s_test_date = datetime.strptime(start_date, '%Y-%m-%d')
     s_train = s_test_date.replace(year = s_test_date.year - 2)
     e_train = s_test_date - timedelta(days=1)
 
@@ -262,7 +324,7 @@ def execute_neural_network_strategy(df, options, commission, data_name, s_test, 
     df = func_utils.add_label(df, gain = gain, loss = loss, n_day = n_day, commission = commission)
 
     # Split train and test
-    df_train, df_test, X_train, X_test, y_train, y_test = func_utils.split_df_date(df, s_train, e_train, s_test, e_test)
+    df_train, df_test, X_train, X_test, y_train, y_test = func_utils.split_df_date(df, s_train, e_train, start_date, end_date)
 
     # Normalization
     print("Normalizando datos...")
@@ -301,13 +363,10 @@ def execute_neural_network_strategy(df, options, commission, data_name, s_test, 
     NN_Strategy.n_day = n_day
 
     # Execute strategy
-    NN_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(NN_Strategy, df_test, commission)
-    # Save results
-    execution_analysis.printAnalysis('red_neuronal', data_name, initial_value, final_value, ta, dd, ma, train_accuracy, test_accuracy)
-    execution_analysis.printAnalysisPDF(NN_Cerebro, 'red_neuronal', data_name, initial_value, final_value, ta, dd, ma, s_test, e_test)
+    NN_Cerebro = execute_strategy(NN_Strategy, df_test, commission, info, options)
 
     # Save simulation chart
-    execution_plot.plot_simulation(NN_Cerebro, 'red_neuronal', data_name, s_test, e_test)
+    execution_plot.plot_simulation(NN_Cerebro, 'red_neuronal', data_name, start_date, end_date)
 
     return NN_Cerebro, NN_Strategy
 
@@ -383,8 +442,9 @@ def execute_pso_strategy(df, options, commission, data_name, s_test, e_test, ite
     PSO_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(PSO_Strategy, df_test, commission)
 
     # Guardamos los resultados
-    execution_analysis.printAnalysis('particle_swarm_optimization', data_name, initial_value, final_value, ta, dd, ma)
-    execution_analysis.printAnalysisPDF(PSO_Cerebro, 'particle_swarm_optimization', data_name, initial_value, final_value, ta, dd, ma, s_test, e_test)
+    strategy_name = 'particle_swarm_optimization'
+    execution_analysis.printAnalysis(strategy_name, data_name, initial_value, final_value, ta, dd, ma)
+    execution_analysis.printAnalysisPDF(PSO_Cerebro, strategy_name, data_name, initial_value, final_value, ta, dd, ma, s_test, e_test)
 
     # Guardamos la grafica de la simulacion
     execution_plot.plot_simulation(PSO_Cerebro, 'particle_swarm_optimization', data_name, s_test, e_test)

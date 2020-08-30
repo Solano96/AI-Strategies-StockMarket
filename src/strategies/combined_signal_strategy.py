@@ -61,8 +61,8 @@ class CombinedSignalStrategy(LogStrategy):
 
         # Buy if signal is greater than buy threshold
         if not self.position and final_signal > self.buy_threshold:
-            self.send_buy_order()
+            self.buy()
 
         # Sell if singal is smaller than sell threshold
         elif self.position and final_signal < self.sell_threshold:
-            self.send_sell_order()
+            self.sell()

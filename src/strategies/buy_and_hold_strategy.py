@@ -21,4 +21,4 @@ class BuyAndHoldStrategy(LogStrategy):
 
         # Buy Operation
         if not self.position:
-            self.send_buy_order()
+            self.buy()

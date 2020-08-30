@@ -45,14 +45,14 @@ class NeuralNetworkStrategy(LogStrategy):
 
         # Buy Operation
         if not self.position and p > 0.55:
-            self.send_buy_order()
+            self.buy()
 
             self.predictions.append(p)
             self.reals.append(np.argmax(self.y_test[len(self)-1]))
 
         # Sell Operation
         elif p < 0.45:
-            self.send_sell_order()
+            self.sell()
 
             self.predictions.append(p)
             self.reals.append(np.argmax(self.y_test[len(self)-1]))

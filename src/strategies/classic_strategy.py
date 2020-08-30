@@ -48,11 +48,11 @@ class ClassicStrategy(LogStrategy):
             rsi_cross_above_oversold = self.rsi[-1] < self.params.oversold and self.rsi[0] >= self.params.oversold
 
             if self.crossover and rsi_cross_above_oversold:
-                self.send_buy_order()
+                self.buy()
 
         # Sell Operation
         else:
             rsi_cross_below_overbought = self.rsi[-1] > self.params.overbought and self.rsi[0] <= self.params.overbought
 
             if not self.crossover and rsi_cross_below_overbought:
-                self.send_sell_order()
+                self.sell()

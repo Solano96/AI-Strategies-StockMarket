@@ -34,11 +34,11 @@ class MovingAveragesCrossStrategy(LogStrategy):
         if not self.position:
             # Not yet ... we MIGHT BUY if ...
             if self.crossover:
-                self.send_buy_order()
+                self.buy()
         # If we are not in the market
         else:
             if not self.crossover:
-                self.send_sell_order()
+                self.sell()
 
 
     def stop(self):
