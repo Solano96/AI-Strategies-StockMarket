@@ -140,6 +140,60 @@ def execute_strategy(strategy, df, commission, info, training_params=None, **kwa
     return cerebro
 
 
+def optimize_strategy(df, commission, strategy, to_date, **kwargs):
+    """
+    Get best params for a given strategy
+    :param df: dataframe with historical data
+    :param commision: commission to be paid on each operation
+    :param strategy: buying and selling strategy to be used
+    :param to_date: simulation final date
+    :return: params with higher profit
+    """
+
+    s_test_date = datetime.strptime(to_date, '%Y-%m-%d')
+    start_train = s_test_date.replace(year = s_test_date.year - 2)
+    end_train = s_test_date - timedelta(days=1)
+
+    df_train = df[start_train:end_train]
+
+    # Create cerebro instance
+    cerebro = bt.Cerebro()
+    cerebro.addanalyzer(bt.analyzers.Returns, _name="returnAnalyzer")
+
+    # Add strategy to cerebro
+    train_strategy = strategy
+    train_strategy.printlog = False
+    strats = cerebro.optstrategy(train_strategy, **kwargs)
+
+    # Feed cerebro with historical data
+    data = bt.feeds.PandasData(dataname = df_train)
+    cerebro.adddata(data)
+
+    # Add sizer
+    cerebro.addsizer(MaxRiskSizer, risk=1.0)
+
+    # Set initial cash and commision
+    cerebro.broker.setcash(6000.0)
+    cerebro.broker.setcommission(commission=commission)
+
+    # Execute cerebro
+    stratruns = cerebro.run()
+
+    best_parameters = dict()
+    best_value = 0
+
+    # Search best parameters
+    for stratrun in stratruns:
+        for strat in stratrun:
+            final_value = strat.analyzers[0]._value_end
+
+            if best_value < final_value:
+                best_value = final_value
+                best_parameters = strat.p._getkwargs()
+
+    return best_parameters
+
+
 def execute_buy_and_hold_strategy(df, commission, data_name, start_date, end_date):
     """
     Execute buy and hold strategy on data history contained in df
@@ -234,10 +288,15 @@ def execute_one_moving_average_strategy(df, commission, data_name, start_date, e
         'Fecha final': end_date
     }
 
+    params = {'maperiod': range(5, 50)}
+
+    # Get best params in past period
+    best_parameters = optimize_strategy(df, commission, OneMovingAverageStrategy, start_date, **params)
+
     df = df[start_date:end_date]
 
     OMA_Strategy =  OneMovingAverageStrategy
-    OMA_Cerebro = execute_strategy(OMA_Strategy, df, commission, info)
+    OMA_Cerebro = execute_strategy(OMA_Strategy, df, commission, info, **best_parameters)
 
     # Save simulation chart
     execution_plot.plot_simulation(OMA_Cerebro, strategy_name, data_name, start_date, end_date)
@@ -245,7 +304,7 @@ def execute_one_moving_average_strategy(df, commission, data_name, start_date, e
     return OMA_Cerebro, OMA_Strategy
 
 
-def execute_moving_averages_cross_strategy(df, commission, data_name, start_date, end_date):
+def execute_moving_averages_cross_strategy(df, commission, data_name, start_date, end_date, optimize=False, **kwargs):
     """
     Execute moving averages cross strategy on data history contained in df
     :param df: dataframe with historical data
@@ -253,6 +312,7 @@ def execute_moving_averages_cross_strategy(df, commission, data_name, start_date
     :param data_name: quote data name
     :param start_date: start date of simulation
     :param end_date: end date of simulation
+    :param optimize: if True then optimize strategy
     :return:
         - MAC_Cerebro - execution engine
         - MAC_Strategy - moving averages cross strategy instance
@@ -269,10 +329,22 @@ def execute_moving_averages_cross_strategy(df, commission, data_name, start_date
         'Fecha final': end_date
     }
 
+    if optimize:
+        print('Optimizando (esto puede tardar)...')
+
+        # Range of values to optimize
+        params = {
+            'ma_short': range(5, 30),
+            'ma_long': range(14, 60)
+        }
+
+        # Get best params in past period
+        kwargs = optimize_strategy(df, commission, MovingAveragesCrossStrategy, start_date, **params)
+
     df = df[start_date:end_date]
 
     MAC_Strategy =  MovingAveragesCrossStrategy
-    MAC_Cerebro = execute_strategy(MAC_Strategy, df, commission, info)
+    MAC_Cerebro = execute_strategy(MAC_Strategy, df, commission, info, **kwargs)
 
     # Save simulation chart
     execution_plot.plot_simulation(MAC_Cerebro, strategy_name, data_name, start_date, end_date)

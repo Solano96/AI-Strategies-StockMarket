@@ -26,9 +26,10 @@ def main(argv):
 
 
     try:
-        opts, args = getopt.getopt(argv, 'hs:q:f:t:v', ['help', 'strategy=', 'quote=', 'from-date=', 'to-date=',
+        opts, args = getopt.getopt(argv, 'hs:q:f:t:vo', ['help', 'strategy=', 'quote=', 'from-date=', 'to-date=',
                                                        'nn-gain=', 'nn-loss=', 'nn-days=', 'nn-epochs=',
                                                        'pso-normalization=', 'pso-c1=', 'pso-c2=', 'pso-inertia=', 'pso-iters=',
+                                                       'ma-short=', 'ma-long=', 'optimize',
                                                        'verbose'])
     except getopt.GetoptError:
         print('main.py -s <strategy> -q <quote> -f <from-date> -t <to-date>')
@@ -86,7 +87,20 @@ def main(argv):
 
     # Execute two moving average
     if strategy in ('two-ma', 'all'):
-        MAC_Cerebro, MAC_Strategy = execute_moving_averages_cross_strategy(df, commission, quote, s_test, e_test)
+
+        params = {'ma_short': 5, 'ma_long': 20}
+        optimize = False
+
+        for opt, arg in opts:
+            if opt == '--ma-short':
+                print(opt)
+                params['ma_short'] = int(arg)
+            elif opt == '--ma-long':
+                params['ma_long'] = int(arg)
+            elif opt in ("-o", "--optimize"):
+                optimize = True
+
+        MAC_Cerebro, MAC_Strategy = execute_moving_averages_cross_strategy(df, commission, quote, s_test, e_test, optimize, **params)
         strategy_list.append((MAC_Strategy, 'Estrategia Cruce Medias Móviles'))
 
     # Execute neural network strategy
@@ -95,13 +109,13 @@ def main(argv):
         options = {'gain': 0.07, 'loss': 0.05, 'n_day': 10, 'epochs': 300}
 
         for opt, arg in opts:
-            if opt in ("--nn-gain"):
-                options['gains'] = float(arg)
-            elif opt in ("--nn-loss"):
+            if opt == "--nn-gain":
+                options['gain'] = float(arg)
+            elif opt == "--nn-loss":
                 options['loss'] = float(arg)
-            elif opt in ("--nn-days"):
+            elif opt == "--nn-days":
                 options['n_day'] = int(arg)
-            elif opt in ("--nn-epochs"):
+            elif opt == "--nn-epochs":
                 options['epochs'] = int(arg)
 
         NN_Cerebro, NN_Strategy = execute_neural_network_strategy(df, options, commission, quote, s_test, e_test)

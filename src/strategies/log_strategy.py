@@ -15,6 +15,7 @@ class LogStrategy(bt.Strategy):
     dates = []
     values = []
     closes = []
+    printlog = True
 
 
     def __init__(self):
@@ -29,8 +30,9 @@ class LogStrategy(bt.Strategy):
 
     def log(self, txt, dt=None):
         ''' Logging function fot this strategy'''
-        dt = dt or self.datas[0].datetime.date(0)
-        logging.info('Date: %s, %s' % (dt.isoformat(), txt))
+        if self.printlog:
+            dt = dt or self.datas[0].datetime.date(0)
+            logging.info('Date: %s, %s' % (dt.isoformat(), txt))
 
 
     def notify_order(self, order):
