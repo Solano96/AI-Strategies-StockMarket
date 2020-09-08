@@ -24,13 +24,24 @@ def main(argv):
     s_train, e_train = '2009-12-22', '2011-12-21'
     s_test, e_test = '2011-12-22', '2013-12-22'
 
+    optimize = False
+
 
     try:
-        opts, args = getopt.getopt(argv, 'hs:q:f:t:vo', ['help', 'strategy=', 'quote=', 'from-date=', 'to-date=',
-                                                       'nn-gain=', 'nn-loss=', 'nn-days=', 'nn-epochs=',
-                                                       'pso-normalization=', 'pso-c1=', 'pso-c2=', 'pso-inertia=', 'pso-iters=',
-                                                       'ma-short=', 'ma-long=', 'optimize',
-                                                       'verbose'])
+        opts, args = getopt.getopt(argv, 'hs:q:f:t:vo',
+                          ['help', 'strategy=', 'quote=', 'from-date=', 'to-date=',
+                           # Neural network parameters
+                           'nn-gain=', 'nn-loss=', 'nn-days=', 'nn-epochs=',
+                           # PSO parameters
+                           'pso-normalization=', 'pso-c1=', 'pso-c2=', 'pso-inertia=', 'pso-iters=',
+                           'pso-retrain-repeat=', 'pso-retrain-interval=', 'pso-retrain-iters=',
+                           # Two moving averages parameters
+                           'ma-short=', 'ma-long=',
+                           # One moving averages parameters
+                           'ma-period=',
+                           'optimize',
+                           'verbose'])
+
     except getopt.GetoptError:
         print('main.py -s <strategy> -q <quote> -f <from-date> -t <to-date>')
         sys.exit(2)
@@ -66,30 +77,47 @@ def main(argv):
         elif opt in("-v", "--verbose"):
             logging.disable(logging.NOTSET)
 
+    # Download data
     df = func_utils.getData(quote)
 
     strategy_list = []
 
-    # Execute buy and hold strategy
+    # -------------------- Execute buy and hold strategy -------------------- #
+
     if strategy in ('buy-and-hold', 'all'):
         BH_Cerebro, BH_Strategy = execute_buy_and_hold_strategy(df, commission, quote, s_test, e_test)
         strategy_list.append((BH_Strategy, 'Comprar y Mantener'))
 
-    # Execute classic strategy
-    if strategy in ('classic', 'all'):
+
+    # -------------------- Execute classic strategy -------------------- #
+
+    if strategy in ('classic'):
         Classic_Cerebro, Classic_Strategy = execute_classic_strategy(df, commission, quote, s_test, e_test)
         strategy_list.append((Classic_Strategy, 'Estrategia Clásica'))
 
-    # Execute one moving average
+
+    # -------------------- Execute one moving average -------------------- #
+
     if strategy in ('one-ma', 'all'):
-        OMA_Cerebro, OMA_Strategy = execute_one_moving_average_strategy(df, commission, quote, s_test, e_test)
+
+        params = {}
+
+        for opt, arg in opts:
+            if opt == '--ma-period':
+                print(opt)
+                params['ma_period'] = int(arg)
+            elif opt in ("-o", "--optimize"):
+                optimize = True
+
+        OMA_Cerebro, OMA_Strategy = execute_one_moving_average_strategy(df, commission, quote, s_test, e_test, optimize, **params)
         strategy_list.append((OMA_Strategy, 'Estrategia Media Móvil'))
 
-    # Execute two moving average
+
+    # -------------------- Execute two moving average -------------------- #
+
     if strategy in ('two-ma', 'all'):
 
-        params = {'ma_short': 5, 'ma_long': 20}
-        optimize = False
+        params = {}
 
         for opt, arg in opts:
             if opt == '--ma-short':
@@ -103,8 +131,10 @@ def main(argv):
         MAC_Cerebro, MAC_Strategy = execute_moving_averages_cross_strategy(df, commission, quote, s_test, e_test, optimize, **params)
         strategy_list.append((MAC_Strategy, 'Estrategia Cruce Medias Móviles'))
 
-    # Execute neural network strategy
-    if strategy in ('neural-network', 'all'):
+
+    # -------------------- Execute neural network strategy -------------------- #
+
+    if strategy in ('neural-network'):
 
         options = {'gain': 0.07, 'loss': 0.05, 'n_day': 10, 'epochs': 300}
 
@@ -121,30 +151,48 @@ def main(argv):
         NN_Cerebro, NN_Strategy = execute_neural_network_strategy(df, options, commission, quote, s_test, e_test)
         strategy_list.append((NN_Strategy, 'Red Neuronal'))
 
-    # Execute combined signal strategy optimized with pso
+
+    # -------------------- Execute combined signal strategy optimized with pso -------------------- #
+
     if strategy in ('combined-signal-pso', 'all'):
 
         normalization = 'exponential'
-        c1 = 0.5
-        c2 = 0.3
-        w = 0.9
+
+        options = {
+            'c1': 0.5, # cognitive parameter
+            'c2': 0.3, # social parameter
+            'w': 0.9,  # inertia parameter
+            'k': 10,   # number of neighbors to be considered
+            'p': 2     # the Minkowski p-norm to use. 1: norma L1, 2: norma L2.
+        }
+
+        retrain_params = {
+            'repeat': 90,
+            'interval': 100,
+            'iters': 10
+        }
+
         iters = 400
 
         for opt, arg in opts:
             if opt in ("--pso-normalization"):
                 normalization = arg
             elif opt in ("--pso-c1"):
-                c1 = arg
+                options['c1'] = float(arg)
             elif opt in ("--pso-c2"):
-                c2 = arg
+                options['c2'] = float(arg)
             elif opt in ("--pso-inertia"):
-                w = arg
+                options['w'] = float(arg)
             elif opt in ("--pso-iters"):
-                iters = arg
+                iters = int(arg)
+            elif opt in ("--pso-retrain-repeat"):
+                retrain_params['repeat'] = int(arg)
+            elif opt in ("--pso-retrain-interval"):
+                retrain_params['interval'] = int(arg)
+            elif opt in ("--pso-retrain-iters"):
+                retrain_params['iters'] = int(arg)
 
-        options = {'c1': c1, 'c2': c2, 'w': w}
-
-        PSO_Cerebro, PSO_Strategy = execute_pso_strategy(df, options, commission, quote, s_test, e_test, iters, normalization)
+        PSO_Cerebro, PSO_Strategy = execute_pso_strategy(df, options, retrain_params, commission, quote, s_test, e_test, iters, normalization)
         strategy_list.append((PSO_Strategy, 'Particle Swarm Optimization'))
 
     if len(strategy_list) == 0:
@@ -156,3 +204,21 @@ def main(argv):
 
 if __name__ == "__main__":
     main(sys.argv[1:])
+
+
+'''
+
+EXECUTION EXAMPLES
+----------------------------------------------------------
+
+PSO Strategy
+
+python3 main.py -s all -q SAN -f 2011-12-22 -t 2013-12-22 --pso-iters 10
+
+python3 main.py -s all -q SAN -f 2011-12-22 -t 2013-12-22 --pso-iters 10 --pso-retrain-repeat 100 --pso-retrain-interval 50 --pso-retrain-iters 5
+
+
+
+
+
+'''

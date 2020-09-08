@@ -10,6 +10,10 @@ class MovingAveragesCrossStrategy(LogStrategy):
         ('ma_long', 20),
     )
 
+    dates = []
+    values = []
+    closes = []
+
 
     def __init__(self):
         """ MovingAveragesCrossStrategy Class Initializer """
@@ -24,7 +28,11 @@ class MovingAveragesCrossStrategy(LogStrategy):
 
     def next(self):
         """ Define logic in each iteration """
-        self.update_log_values()
+        self.log_close_price()
+
+        self.values.append(self.broker.getvalue())
+        self.dates.append(self.data.datetime.date())
+        self.closes.append(self.dataclose[0])
 
         # Check if an order is pending ... if yes, we cannot send a 2nd one
         if self.order:

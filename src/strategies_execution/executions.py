@@ -179,19 +179,21 @@ def optimize_strategy(df, commission, strategy, to_date, **kwargs):
     # Execute cerebro
     stratruns = cerebro.run()
 
-    best_parameters = dict()
+    best_params = dict()
     best_value = 0
 
     # Search best parameters
-    for stratrun in stratruns:
-        for strat in stratrun:
+    for stratrun in stratruns: # Iter executions
+        for strat in stratrun: # Iter Strategy in execution
+            # Get final cash
             final_value = strat.analyzers[0]._value_end
 
+            # Update best params
             if best_value < final_value:
                 best_value = final_value
-                best_parameters = strat.p._getkwargs()
+                best_params = strat.p._getkwargs()
 
-    return best_parameters
+    return best_params
 
 
 def execute_buy_and_hold_strategy(df, commission, data_name, start_date, end_date):
@@ -264,7 +266,7 @@ def execute_classic_strategy(df, commission, data_name, start_date, end_date):
     return Classic_Cerebro, Classic_Strategy
 
 
-def execute_one_moving_average_strategy(df, commission, data_name, start_date, end_date):
+def execute_one_moving_average_strategy(df, commission, data_name, start_date, end_date, optimize=False, **kwargs):
     """
     Execute one moving average strategy on data history contained in df
     :param df: dataframe with historical data
@@ -288,15 +290,18 @@ def execute_one_moving_average_strategy(df, commission, data_name, start_date, e
         'Fecha final': end_date
     }
 
-    params = {'maperiod': range(5, 50)}
+    if optimize:
+        print('Optimizando (esto puede tardar)...')
 
-    # Get best params in past period
-    best_parameters = optimize_strategy(df, commission, OneMovingAverageStrategy, start_date, **params)
+        params = {'ma_period': range(5, 50)}
+
+        # Get best params in past period
+        kwargs = optimize_strategy(df, commission, OneMovingAverageStrategy, start_date, **params)
 
     df = df[start_date:end_date]
 
     OMA_Strategy =  OneMovingAverageStrategy
-    OMA_Cerebro = execute_strategy(OMA_Strategy, df, commission, info, **best_parameters)
+    OMA_Cerebro = execute_strategy(OMA_Strategy, df, commission, info, **kwargs)
 
     # Save simulation chart
     execution_plot.plot_simulation(OMA_Cerebro, strategy_name, data_name, start_date, end_date)
@@ -334,8 +339,8 @@ def execute_moving_averages_cross_strategy(df, commission, data_name, start_date
 
         # Range of values to optimize
         params = {
-            'ma_short': range(5, 30),
-            'ma_long': range(14, 60)
+            'ma_short': range(5, 18),
+            'ma_long': range(20, 100, 2)
         }
 
         # Get best params in past period
@@ -343,13 +348,12 @@ def execute_moving_averages_cross_strategy(df, commission, data_name, start_date
 
     df = df[start_date:end_date]
 
-    MAC_Strategy =  MovingAveragesCrossStrategy
-    MAC_Cerebro = execute_strategy(MAC_Strategy, df, commission, info, **kwargs)
+    MAC_Cerebro = execute_strategy(MovingAveragesCrossStrategy, df, commission, info, **kwargs)
 
     # Save simulation chart
     execution_plot.plot_simulation(MAC_Cerebro, strategy_name, data_name, start_date, end_date)
 
-    return MAC_Cerebro, MAC_Strategy
+    return MAC_Cerebro, MovingAveragesCrossStrategy
 
 
 def execute_neural_network_strategy(df, options, commission, data_name, start_date, end_date):
@@ -438,12 +442,12 @@ def execute_neural_network_strategy(df, options, commission, data_name, start_da
     NN_Cerebro = execute_strategy(NN_Strategy, df_test, commission, info, options)
 
     # Save simulation chart
-    execution_plot.plot_simulation(NN_Cerebro, 'red_neuronal', data_name, start_date, end_date)
+    execution_plot.plot_simulation(NN_Cerebro, strategy_name, data_name, start_date, end_date)
 
     return NN_Cerebro, NN_Strategy
 
 
-def execute_pso_strategy(df, options, commission, data_name, s_test, e_test, iters=100, normalization='exponential'):
+def execute_pso_strategy(df, options, retrain_params, commission, data_name, s_test, e_test, iters=100, normalization='exponential'):
     """
     Execute particle swarm optimization strategy on data history contained in df
     :param df: dataframe with historical data
@@ -462,6 +466,15 @@ def execute_pso_strategy(df, options, commission, data_name, s_test, e_test, ite
 
     print_execution_name("Estrategia: particle swar optimization")
 
+    strategy_name = 'particle_swarm_optimization'
+
+    info = {
+        'Mercado': data_name,
+        'Estrategia': strategy_name,
+        'Fecha inicial': s_test,
+        'Fecha final': e_test
+    }
+
     # ------------ Obtenemos los conjuntos de train y test ------------ #
 
     s_test_date = datetime.strptime(s_test, '%Y-%m-%d')
@@ -474,6 +487,10 @@ def execute_pso_strategy(df, options, commission, data_name, s_test, e_test, ite
     # ------------ Fijamos hiperparámetros ------------ #
 
     n_particles=50
+    num_neighbors = 10
+    minkowski_p_norm = 2
+    options['k'] = num_neighbors
+    options['p'] = minkowski_p_norm
     dimensions=len(gen_representation.moving_average_rules)+2
 
     if normalization == 'exponential':
@@ -488,11 +505,17 @@ def execute_pso_strategy(df, options, commission, data_name, s_test, e_test, ite
     bounds = (min_bound, max_bound)
 
     # Call instance of PSO
-    optimizer = ps.single.GlobalBestPSO(n_particles=n_particles, dimensions=dimensions, options=options, bounds=bounds)
+    optimizer = ps.single.GlobalBestPSO(n_particles=n_particles,
+                                        dimensions=dimensions,
+                                        options=options,
+                                        bounds=bounds)
 
     # Perform optimization
     kwargs={'from_date': s_train, 'to_date': e_train}
-    best_cost, best_pos = optimizer.optimize(gen_representation.cost_function, iters=iters, **kwargs)
+    best_cost, best_pos = optimizer.optimize(gen_representation.cost_function,
+                                             iters=iters,
+                                             n_processes=2,
+                                             **kwargs)
 
     # Create an instance from CombinedSignalStrategy class and assign parameters
     PSO_Strategy = CombinedSignalStrategy
@@ -501,22 +524,17 @@ def execute_pso_strategy(df, options, commission, data_name, s_test, e_test, ite
     PSO_Strategy.w = w
     PSO_Strategy.buy_threshold = buy_threshold
     PSO_Strategy.sell_threshold = sell_threshold
-    PSO_Strategy.period_list = gen_representation.period_list
     PSO_Strategy.moving_average_rules = gen_representation.moving_average_rules
     PSO_Strategy.moving_averages = gen_representation.moving_averages_test
     PSO_Strategy.optimizer = optimizer
     PSO_Strategy.gen_representation = gen_representation
     PSO_Strategy.normalization = normalization
+    PSO_Strategy.retrain_params = retrain_params
 
     df_test = gen_representation.df_test
     df_train = gen_representation.df_train
 
-    PSO_Cerebro, initial_value, final_value, ta, dd, ma = execute_strategy(PSO_Strategy, df_test, commission)
-
-    # Guardamos los resultados
-    strategy_name = 'particle_swarm_optimization'
-    execution_analysis.printAnalysis(strategy_name, data_name, initial_value, final_value, ta, dd, ma)
-    execution_analysis.printAnalysisPDF(PSO_Cerebro, strategy_name, data_name, initial_value, final_value, ta, dd, ma, s_test, e_test)
+    PSO_Cerebro = execute_strategy(PSO_Strategy, df_test, commission, info, retrain_params)
 
     # Guardamos la grafica de la simulacion
     execution_plot.plot_simulation(PSO_Cerebro, 'particle_swarm_optimization', data_name, s_test, e_test)

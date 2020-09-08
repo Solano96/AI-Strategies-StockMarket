@@ -11,7 +11,8 @@ class GeneticRepresentation():
         """ GeneticRepresentation Class Initializer """
 
         #self.period_list = [2,5,10,15,20,25,30,40,50,75,100,125,150,200,250]
-        self.period_list = [5,10,15,20,25,30,40,50]
+        #self.period_list = [5,10,15,20,25,30,40,50]
+        self.period_list = [5,7,9,10,12,14,15,18,20,21,24,27,30]
         #self.period_list = [2,5,7,10,12,15,20]
         self.moving_average_rules = []
 

@@ -5,8 +5,12 @@ class OneMovingAverageStrategy(LogStrategy):
     """ One Moving Average Strategy """
 
     params = (
-        ('maperiod', 15),
+        ('ma_period', 15),
     )
+
+    dates = []
+    values = []
+    closes = []
 
 
     def __init__(self):
@@ -15,12 +19,16 @@ class OneMovingAverageStrategy(LogStrategy):
 
         # Add a MovingAverageSimple indicator
         self.sma = bt.indicators.SimpleMovingAverage(
-            self.datas[0], period=self.params.maperiod)
+            self.datas[0], period=self.params.ma_period)
 
 
     def next(self):
         """ Define logic in each iteration """
-        self.update_log_values()
+        self.log_close_price()
+
+        self.values.append(self.broker.getvalue())
+        self.dates.append(self.data.datetime.date())
+        self.closes.append(self.dataclose[0])
 
         # Check if an order is pending ... if yes, we cannot send a 2nd one
         if self.order:
@@ -38,4 +46,4 @@ class OneMovingAverageStrategy(LogStrategy):
 
     def stop(self):
         self.log('(MA Period %2d) Ending Value %.2f' %
-                 (self.params.maperiod, self.broker.getvalue()))
+                 (self.params.ma_period, self.broker.getvalue()))

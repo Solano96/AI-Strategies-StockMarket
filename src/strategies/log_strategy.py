@@ -5,18 +5,14 @@ import math
 
 class LogStrategy(bt.Strategy):
     """
+
     Log Strategy Class
 
     This class is used to log all about simulation process.
 
-
     """
 
-    dates = []
-    values = []
-    closes = []
     printlog = True
-
 
     def __init__(self):
         """ LogStrategy Class Initializer """
@@ -82,11 +78,7 @@ class LogStrategy(bt.Strategy):
                  (trade.pnl, trade.pnlcomm))
 
 
-    def update_log_values(self):
+    def log_close_price(self):
         """ Method to update some neccesary values to plot charts after execution"""
         # Simply log the closing price of the series from the reference
         self.log('Close, %.2f' % self.dataclose[0])
-
-        self.values.append(self.broker.getvalue())
-        self.dates.append(self.data.datetime.date())
-        self.closes.append(self.dataclose[0])

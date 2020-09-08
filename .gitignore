@@ -16,3 +16,6 @@ reports
 app.desktop
 src/report.log
 report.log
+
+# My files
+mytest*

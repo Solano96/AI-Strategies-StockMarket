@@ -21,6 +21,10 @@ class ClassicStrategy(LogStrategy):
         ('oversold', 50)
     )
 
+    dates = []
+    values = []
+    closes = []
+
 
     def __init__(self):
         """ ClassicStrategy Class Initializer """
@@ -37,7 +41,11 @@ class ClassicStrategy(LogStrategy):
 
     def next(self):
         """ Define logic in each iteration """
-        self.update_log_values()
+        self.log_close_price()
+
+        self.values.append(self.broker.getvalue())
+        self.dates.append(self.data.datetime.date())
+        self.closes.append(self.dataclose[0])
 
         # we cannot send a 2nd an order if if another one is pending
         if self.order:

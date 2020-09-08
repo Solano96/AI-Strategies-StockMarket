@@ -8,7 +8,7 @@ def moving_average(df, n):
 	:param n: moving average period
 	:return: dataframe with moving average of n period added as a column
 	"""
-	df['MA_' + str(n)] = ta.MA(df['Close'], timeperiod=n)
+	df['MA_' + str(n)] = ta.EMA(df['Close'], timeperiod=n)
 	return df
 
 # Media exponencial

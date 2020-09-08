@@ -40,9 +40,9 @@ def printAnalysis(info, params, metrics, training_params=None):
 
     file_name = info['Estrategia']
 
-    f = open ('./resultados/results.log','a')
+    f = open ('./log_results/results.log','a')
 
-    f.write('------------------------------------\n\n')
+    f.write('\n------------------------------------\n\n')
 
     for key, value in info.items():
         f.write("{0}: {1}\n".format(key, value))
@@ -169,4 +169,4 @@ def printAnalysisPDF(cerebro, info, params, metrics, training_params=None):
 
     create_folder_if_not_exists('./reports')
     pdf.output(pdf_path)
-    webbrowser.open_new_tab(pdf_path)
+    #webbrowser.open_new_tab(pdf_path)
