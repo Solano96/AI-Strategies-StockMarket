@@ -4,7 +4,6 @@ from keras.layers import Dense, Flatten
 from keras.optimizers import SGD
 from keras.regularizers import l2
 
-np.random.seed(1) 
 
 class NeuralNetwork():
 
@@ -27,7 +26,7 @@ class NeuralNetwork():
 		print('[Model] Loading model from file %s' % filepath)
 		self.model = load_model(filepath)
 
-	def build_model(self, input_shape): 
+	def build_model(self, input_shape):
 		"""
 		Build the multilayer perceptron model
 		:param input_shape:
@@ -122,5 +121,3 @@ class NeuralNetwork():
 		y = np.array(self.memory_y)
 
 		self.model.fit(X, y, epochs=5, batch_size=batch_size, verbose=0)
-
-

@@ -10,7 +10,7 @@ import src.utils.func_utils as func_utils
 from src.strategies.log_strategy import LogStrategy
 
 
-class ClassicStrategy(LogStrategy):
+class MovingAverageRsiStrategy(LogStrategy):
     """ Classic Strategy with Moving Averages and RSI """
 
     params = (

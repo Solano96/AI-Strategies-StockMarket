@@ -36,11 +36,14 @@ def printAnalysis(info, params, metrics, training_params=None):
     :param test_accuracy: test accuracy (optional)
     '''
 
-    create_folder_if_not_exists('./resultados')
+    create_folder_if_not_exists('./reports')
+    create_folder_if_not_exists('./reports/log_results')
 
     file_name = info['Estrategia']
 
-    f = open ('./log_results/results.log','a')
+    f = open ('./reports/log_results/results.log','a')
+
+    latex_metrics = ''
 
     f.write('\n------------------------------------\n\n')
 
@@ -63,8 +66,13 @@ def printAnalysis(info, params, metrics, training_params=None):
 
     for key, value in metrics.items():
         if isinstance(value, float):
-            value = round(value, 2)
+            value = round(value, 3)
         f.write("{0}: {1}\n".format(key, value))
+        latex_metrics += ' & ' + str(value)
+
+    f.write("\n")
+    f.write(latex_metrics)
+    f.write("\n")
 
     f.close()
 
@@ -157,11 +165,10 @@ def printAnalysisPDF(cerebro, info, params, metrics, training_params=None):
     print_section(pdf, "Simulación", font_family, section_size, margin)
 
     # Image with 800x500 pixels (8,5)
-    image_path = execution_plot.plot_simulation(cerebro, file_name, data_name, from_date, to_date,
-                                                size=(10,6), style='line')
+    image_path = execution_plot.plot_simulation(cerebro, info, size=(10,6), style='line')
 
     # PDF path
-    pdf_path = './reports/' + data_name + '_' + file_name + '_' + from_date + '_' + to_date + '.pdf'
+    pdf_path = './reports/' + data_name + '_' + from_date + '_' + to_date + '_' + file_name + '.pdf'
 
     pdf.image(image_path, x=0.0, y=pdf.get_y(), w=8.0)
     os.remove(image_path)

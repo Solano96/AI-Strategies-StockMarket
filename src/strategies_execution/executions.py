@@ -5,8 +5,7 @@ import numpy as np
 import math
 import sys, getopt
 from datetime import datetime, timedelta
-
-from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
 
 import src.utils.func_utils as func_utils
 
@@ -16,34 +15,12 @@ from src.classes.myAnalyzer import MyAnalyzer
 from src.classes.myBuySell import MyBuySell
 from src.classes.maxRiskSizer import MaxRiskSizer
 
-import src.classes.model as model
-import src.classes.geneticRepresentation as geneticRepresentation
-
 # Import strategies execution
 import src.strategies_execution.execution_analysis as execution_analysis
 import src.strategies_execution.execution_plot as execution_plot
 
-# Import strategies
-from src.strategies.buy_and_hold_strategy import BuyAndHoldStrategy
-from src.strategies.classic_strategy import ClassicStrategy
-from src.strategies.neural_network_strategy import NeuralNetworkStrategy
-from src.strategies.combined_signal_strategy import CombinedSignalStrategy
-from src.strategies.one_moving_average_strategy import OneMovingAverageStrategy
-from src.strategies.moving_averages_cross_strategy import MovingAveragesCrossStrategy
-
-import pyswarms as ps
-
 import backtrader as bt
 import backtrader.plot
-import matplotlib
-import matplotlib.pyplot as plt
-
-from numpy.random import seed
-
-seed(1)
-# Opciones de ejecucion
-pd.options.mode.chained_assignment = None
-np.set_printoptions(threshold=sys.maxsize)
 
 
 def print_execution_name(execution_name):
@@ -79,7 +56,7 @@ def execute_strategy(strategy, df, commission, info, training_params=None, **kwa
     cerebro.addanalyzer(MyAnalyzer, _name = "myAnalyzer")
 
     # Change buy sell observer
-    bt.observers.BuySell = MyBuySell
+    # bt.observers.BuySell = MyBuySell
 
     # Set initial cash and commision
     cerebro.broker.setcash(6000.0)
@@ -136,6 +113,7 @@ def execute_strategy(strategy, df, commission, info, training_params=None, **kwa
 
     execution_analysis.printAnalysis(info, params, metrics, training_params)
     execution_analysis.printAnalysisPDF(cerebro, info, params, metrics, training_params)
+    execution_plot.plot_simulation(cerebro, info)
 
     return cerebro
 
@@ -188,355 +166,11 @@ def optimize_strategy(df, commission, strategy, to_date, **kwargs):
             # Get final cash
             final_value = strat.analyzers[0]._value_end
 
+            #print(final_value, ": ", strat.p._getkwargs())
+
             # Update best params
             if best_value < final_value:
                 best_value = final_value
                 best_params = strat.p._getkwargs()
 
     return best_params
-
-
-def execute_buy_and_hold_strategy(df, commission, data_name, start_date, end_date):
-    """
-    Execute buy and hold strategy on data history contained in df
-    :param df: dataframe with historical data
-    :param commision: commission to be paid on each operation
-    :param data_name: quote data name
-    :param start_date: start date of simulation
-    :param end_date: end date of simulation
-    :return:
-        - BH_Cerebro - execution engine
-        - BH_Strategy - buy and hold strategy instance
-    """
-
-    print_execution_name("Estrategia: comprar y mantener")
-
-    strategy_name = 'comprar_y_mantener'
-
-    info = {
-        'Mercado': data_name,
-        'Estrategia': strategy_name,
-        'Fecha inicial': start_date,
-        'Fecha final': end_date
-    }
-
-    df = df[start_date:end_date]
-
-    BH_Strategy =  BuyAndHoldStrategy
-    BH_Cerebro = execute_strategy(BH_Strategy, df, commission, info)
-
-    # Save simulation chart
-    execution_plot.plot_simulation(BH_Cerebro, strategy_name, data_name, start_date, end_date)
-
-    return BH_Cerebro, BH_Strategy
-
-
-def execute_classic_strategy(df, commission, data_name, start_date, end_date):
-    """
-    Execute classic strategy on data history contained in df
-    :param df: dataframe with historical data
-    :param commision: commission to be paid on each operation
-    :param data_name: quote data name
-    :param start_date: start date of simulation
-    :param end_date: end date of simulation
-    :return:
-        - Classic_Cerebro - execution engine
-        - Classic_Strategy - classic strategy instance
-    """
-
-    print_execution_name("Estrategia: clásica")
-
-    strategy_name = 'estrategia_clasica'
-
-    info = {
-        'Mercado': data_name,
-        'Estrategia': strategy_name,
-        'Fecha inicial': start_date,
-        'Fecha final': end_date
-    }
-
-    df = df[start_date:end_date]
-
-    Classic_Strategy =  ClassicStrategy
-    Classic_Cerebro = execute_strategy(Classic_Strategy, df, commission, info)
-
-    # Save simulation chart
-    execution_plot.plot_simulation(Classic_Cerebro, strategy_name, data_name, start_date, end_date)
-
-    return Classic_Cerebro, Classic_Strategy
-
-
-def execute_one_moving_average_strategy(df, commission, data_name, start_date, end_date, optimize=False, **kwargs):
-    """
-    Execute one moving average strategy on data history contained in df
-    :param df: dataframe with historical data
-    :param commision: commission to be paid on each operation
-    :param data_name: quote data name
-    :param start_date: start date of simulation
-    :param end_date: end date of simulation
-    :return:
-        - OMA_Cerebro - execution engine
-        - OMA_Strategy - one moving average strategy instance
-    """
-
-    print_execution_name("Estrategia: media móvil")
-
-    strategy_name = 'estrategia_media_movil'
-
-    info = {
-        'Mercado': data_name,
-        'Estrategia': strategy_name,
-        'Fecha inicial': start_date,
-        'Fecha final': end_date
-    }
-
-    if optimize:
-        print('Optimizando (esto puede tardar)...')
-
-        params = {'ma_period': range(5, 50)}
-
-        # Get best params in past period
-        kwargs = optimize_strategy(df, commission, OneMovingAverageStrategy, start_date, **params)
-
-    df = df[start_date:end_date]
-
-    OMA_Strategy =  OneMovingAverageStrategy
-    OMA_Cerebro = execute_strategy(OMA_Strategy, df, commission, info, **kwargs)
-
-    # Save simulation chart
-    execution_plot.plot_simulation(OMA_Cerebro, strategy_name, data_name, start_date, end_date)
-
-    return OMA_Cerebro, OMA_Strategy
-
-
-def execute_moving_averages_cross_strategy(df, commission, data_name, start_date, end_date, optimize=False, **kwargs):
-    """
-    Execute moving averages cross strategy on data history contained in df
-    :param df: dataframe with historical data
-    :param commision: commission to be paid on each operation
-    :param data_name: quote data name
-    :param start_date: start date of simulation
-    :param end_date: end date of simulation
-    :param optimize: if True then optimize strategy
-    :return:
-        - MAC_Cerebro - execution engine
-        - MAC_Strategy - moving averages cross strategy instance
-    """
-
-    print_execution_name("Estrategia: cruce de medias móviles")
-
-    strategy_name = 'estrategia_cruce_medias_moviles'
-
-    info = {
-        'Mercado': data_name,
-        'Estrategia': strategy_name,
-        'Fecha inicial': start_date,
-        'Fecha final': end_date
-    }
-
-    if optimize:
-        print('Optimizando (esto puede tardar)...')
-
-        # Range of values to optimize
-        params = {
-            'ma_short': range(5, 18),
-            'ma_long': range(20, 100, 2)
-        }
-
-        # Get best params in past period
-        kwargs = optimize_strategy(df, commission, MovingAveragesCrossStrategy, start_date, **params)
-
-    df = df[start_date:end_date]
-
-    MAC_Cerebro = execute_strategy(MovingAveragesCrossStrategy, df, commission, info, **kwargs)
-
-    # Save simulation chart
-    execution_plot.plot_simulation(MAC_Cerebro, strategy_name, data_name, start_date, end_date)
-
-    return MAC_Cerebro, MovingAveragesCrossStrategy
-
-
-def execute_neural_network_strategy(df, options, commission, data_name, start_date, end_date):
-    """
-    Execute neural network strategy on data history contained in df
-    :param df: dataframe with historical data
-    :param options: dict with the following parameters
-        - gain - gain threshold in simulation of labelling
-        - loss - loss threshold simulation of labelling
-        - n_day - number of days in simulation of labelling
-        - epochs - number of epochs to train the neural network
-    :param commission: commission to be paid on each operation
-    :param data_name: quote data name
-    :param start_date: start date of simulation
-    :param end_date: end date of simulation
-    :return:
-        - NN_Cerebro - execution engine
-        - NN_Strategy - neural network strategy instance
-    """
-
-    print_execution_name("Estrategia: red neuronal")
-
-    strategy_name = 'red_neuronal'
-
-    info = {
-        'Mercado': data_name,
-        'Estrategia': strategy_name,
-        'Fecha inicial': start_date,
-        'Fecha final': end_date
-    }
-
-    # Get parameters
-    gain = options['gain']
-    loss = options['loss']
-    n_day = options['n_day']
-    epochs = options['epochs']
-
-    s_test_date = datetime.strptime(start_date, '%Y-%m-%d')
-    s_train = s_test_date.replace(year = s_test_date.year - 2)
-    e_train = s_test_date - timedelta(days=1)
-
-    # Preprocess dataset
-    df = func_utils.add_features(df)
-    df = func_utils.add_label(df, gain = gain, loss = loss, n_day = n_day, commission = commission)
-
-    # Split train and test
-    df_train, df_test, X_train, X_test, y_train, y_test = func_utils.split_df_date(df, s_train, e_train, start_date, end_date)
-
-    # Normalization
-    print("Normalizando datos...")
-    sc = StandardScaler()
-    X_train = sc.fit_transform(X_train)
-    X_test = sc.fit_transform (X_test)
-
-    # Transform data in a correct format to use in Keras
-    X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
-    X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
-
-    # Get prediction model
-    print("Entrenando red neuronal...")
-    neural_network = model.NeuralNetwork()
-    neural_network.build_model(input_shape = (X_train.shape[1], 1))
-    neural_network.train(X_train, y_train, epochs = epochs)
-
-    # Get accuraccy
-    train_accuracy = neural_network.get_accuracy(X_train, y_train)
-    test_accuracy = neural_network.get_accuracy(X_test, y_test)
-
-    print("\nRESULTADOS PREDICCION:\n")
-    print("TRAIN :: Porcentaje de acierto: " + str(train_accuracy))
-    print("TEST  :: Porcentaje de acierto: " + str(test_accuracy))
-
-    # ------------------------ Backtesting ------------------------ #
-
-    # Initialize neural network memory
-    neural_network.init_memory(X_train[len(X_train)-15:len(X_train)], y_train[len(y_train)-15:len(y_train)])
-
-    # Create an instance from NeuralNetworkStrategy class and assign parameters
-    NN_Strategy = NeuralNetworkStrategy
-    NN_Strategy.X_test = X_test
-    NN_Strategy.y_test = y_test
-    NN_Strategy.model = neural_network
-    NN_Strategy.n_day = n_day
-
-    # Execute strategy
-    NN_Cerebro = execute_strategy(NN_Strategy, df_test, commission, info, options)
-
-    # Save simulation chart
-    execution_plot.plot_simulation(NN_Cerebro, strategy_name, data_name, start_date, end_date)
-
-    return NN_Cerebro, NN_Strategy
-
-
-def execute_pso_strategy(df, options, retrain_params, commission, data_name, s_test, e_test, iters=100, normalization='exponential'):
-    """
-    Execute particle swarm optimization strategy on data history contained in df
-    :param df: dataframe with historical data
-    :param options: dict with the following parameters
-        - c1 - cognitive parameter with which the particle follows its personal best
-        - c2 - social parameter with which the particle follows the swarm's global best position
-        - w - parameter that controls the inertia of the swarm's movement
-    :param commision: commission to be paid on each operation
-    :param data_name: quote data name
-    :param start_date: start date of simulation
-    :param end_date: end date of simulation
-    :return:
-        - PSO_Cerebro - execution engine
-        - PSO_Strategy - pso strategy instance
-    """
-
-    print_execution_name("Estrategia: particle swar optimization")
-
-    strategy_name = 'particle_swarm_optimization'
-
-    info = {
-        'Mercado': data_name,
-        'Estrategia': strategy_name,
-        'Fecha inicial': s_test,
-        'Fecha final': e_test
-    }
-
-    # ------------ Obtenemos los conjuntos de train y test ------------ #
-
-    s_test_date = datetime.strptime(s_test, '%Y-%m-%d')
-    s_train = s_test_date.replace(year = s_test_date.year - 2)
-    #s_train = s_test_date - timedelta(days=180)
-    e_train = s_test_date - timedelta(days=1)
-
-    gen_representation = geneticRepresentation.GeneticRepresentation(df, s_train, e_train, s_test, e_test)
-
-    # ------------ Fijamos hiperparámetros ------------ #
-
-    n_particles=50
-    num_neighbors = 10
-    minkowski_p_norm = 2
-    options['k'] = num_neighbors
-    options['p'] = minkowski_p_norm
-    dimensions=len(gen_representation.moving_average_rules)+2
-
-    if normalization == 'exponential':
-        max_bound = 1.0 * np.ones(dimensions-2)
-        min_bound = -max_bound
-    elif normalization == 'l1':
-        max_bound = 1.0 * np.ones(dimensions-2)
-        min_bound = np.zeros(dimensions-2)
-
-    max_bound = np.append(max_bound, [1.0, 0.0])
-    min_bound = np.append(min_bound, [0.0, -1.0])
-    bounds = (min_bound, max_bound)
-
-    # Call instance of PSO
-    optimizer = ps.single.GlobalBestPSO(n_particles=n_particles,
-                                        dimensions=dimensions,
-                                        options=options,
-                                        bounds=bounds)
-
-    # Perform optimization
-    kwargs={'from_date': s_train, 'to_date': e_train}
-    best_cost, best_pos = optimizer.optimize(gen_representation.cost_function,
-                                             iters=iters,
-                                             n_processes=2,
-                                             **kwargs)
-
-    # Create an instance from CombinedSignalStrategy class and assign parameters
-    PSO_Strategy = CombinedSignalStrategy
-    w, buy_threshold, sell_threshold = func_utils.get_split_w_threshold(best_pos)
-
-    PSO_Strategy.w = w
-    PSO_Strategy.buy_threshold = buy_threshold
-    PSO_Strategy.sell_threshold = sell_threshold
-    PSO_Strategy.moving_average_rules = gen_representation.moving_average_rules
-    PSO_Strategy.moving_averages = gen_representation.moving_averages_test
-    PSO_Strategy.optimizer = optimizer
-    PSO_Strategy.gen_representation = gen_representation
-    PSO_Strategy.normalization = normalization
-    PSO_Strategy.retrain_params = retrain_params
-
-    df_test = gen_representation.df_test
-    df_train = gen_representation.df_train
-
-    PSO_Cerebro = execute_strategy(PSO_Strategy, df_test, commission, info, retrain_params)
-
-    # Guardamos la grafica de la simulacion
-    execution_plot.plot_simulation(PSO_Cerebro, 'particle_swarm_optimization', data_name, s_test, e_test)
-
-    return PSO_Cerebro, PSO_Strategy

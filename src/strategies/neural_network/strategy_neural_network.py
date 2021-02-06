@@ -1,11 +1,4 @@
-import pandas as pd
 import numpy as np
-import math
-import datetime
-from datetime import timedelta
-
-import backtrader as bt
-from numpy.random import seed
 import src.utils.func_utils as func_utils
 from src.strategies.log_strategy import LogStrategy
 
@@ -28,7 +21,6 @@ class NeuralNetworkStrategy(LogStrategy):
     dates = []
     values = []
     closes = []
-
 
     def __init__(self):
         """ NeuralNetworkStrategy Class Initializer """

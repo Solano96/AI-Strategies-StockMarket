@@ -18,7 +18,7 @@ def create_folder_inside_img_if_not_exists(folder_name):
         os.makedirs('./img/' + folder_name)
 
 
-def plot_simulation(cerebro, file_name, data_name, from_date=None, to_date=None, size=None, style='line'):
+def plot_simulation(cerebro, info, size=None, style='line'):
     """
     Plot strategy simulation
     :param cerebro: backtrader engine
@@ -28,6 +28,11 @@ def plot_simulation(cerebro, file_name, data_name, from_date=None, to_date=None,
     :param to_date: end date of simulation
     :return: saved file name
     """
+    file_name = info['Estrategia']
+    data_name = info['Mercado']
+    from_date = info['Fecha inicial']
+    to_date = info['Fecha final']
+    
     cerebro.getFig(iplot=False, style=style, barup='green')
 
     plt.subplots_adjust(top=0.98, bottom=0.1, left=0.1, right=0.9, hspace=0.0, wspace=0.0)
@@ -69,13 +74,15 @@ def plot_capital(strategy_list, data_name, img_name, from_date=None, to_date=Non
     :param to_date: end date of simulation
     """
     fig = plt.figure()
-    plt.subplots_adjust(top=0.98, bottom=0.1, left=0.1, right=0.9, hspace=0.0, wspace=0.0)
+    plt.subplots_adjust(top=0.98, bottom=0.1, left=0.05, right=0.98, hspace=0.0, wspace=0.0)
     ax = fig.add_subplot(111)
+    fig.set_size_inches((10,4))
 
     for strategy, name_strategy in strategy_list:
         ax.plot(strategy.dates, strategy.values, label=name_strategy)
 
-    ax.legend(loc='upper left')
+    #ax.legend(loc='upper left')
+    ax.legend(loc='lower left')
     ax.yaxis.grid(linestyle="-")
 
     # Create ganancias folder if not exists

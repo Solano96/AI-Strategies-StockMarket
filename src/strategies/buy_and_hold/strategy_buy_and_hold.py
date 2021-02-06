@@ -1,4 +1,3 @@
-import backtrader as bt
 from src.strategies.log_strategy import LogStrategy
 
 

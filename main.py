@@ -9,6 +9,12 @@ import sys, getopt
 import src.utils.func_utils as func_utils
 from src.strategies_execution.executions import *
 import src.strategies_execution.execution_plot as execution_plot
+from src.strategies.buy_and_hold.execute_buy_and_hold import execute_buy_and_hold_strategy
+from src.strategies.one_moving_average.execute_one_moving_average import execute_one_moving_average_strategy
+from src.strategies.moving_averages_cross.execute_moving_averages_cross import execute_moving_averages_cross_strategy
+from src.strategies.moving_average_rsi.execute_moving_average_rsi import execute_moving_average_rsi_strategy
+from src.strategies.neural_network.execute_neural_network import execute_neural_network_strategy
+from src.strategies.combined_signal.execute_combined_signal import execute_pso_strategy
 
 import warnings
 
@@ -33,8 +39,8 @@ def main(argv):
                            # Neural network parameters
                            'nn-gain=', 'nn-loss=', 'nn-days=', 'nn-epochs=',
                            # PSO parameters
-                           'pso-normalization=', 'pso-c1=', 'pso-c2=', 'pso-inertia=', 'pso-iters=',
-                           'pso-retrain-repeat=', 'pso-retrain-interval=', 'pso-retrain-iters=',
+                           'pso-c1=', 'pso-c2=', 'pso-inertia=', 'pso-iters=', 'pso-particles=', 'pso-neighbours=',
+                           'pso-retrain-repeat=', 'pso-retrain-interval=', 'pso-retrain-iters=', 'pso-normalization=',
                            # Two moving averages parameters
                            'ma-short=', 'ma-long=',
                            # One moving averages parameters
@@ -92,7 +98,7 @@ def main(argv):
     # -------------------- Execute classic strategy -------------------- #
 
     if strategy in ('classic'):
-        Classic_Cerebro, Classic_Strategy = execute_classic_strategy(df, commission, quote, s_test, e_test)
+        Classic_Cerebro, Classic_Strategy = execute_moving_average_rsi_strategy(df, commission, quote, s_test, e_test)
         strategy_list.append((Classic_Strategy, 'Estrategia Clásica'))
 
 
@@ -172,7 +178,13 @@ def main(argv):
             'iters': 10
         }
 
-        iters = 400
+        topology = {
+            'type': 'global',
+            'particles': 50,
+            'neighbours': 5
+        }
+
+        iters = 20
 
         for opt, arg in opts:
             if opt in ("--pso-normalization"):
@@ -191,8 +203,12 @@ def main(argv):
                 retrain_params['interval'] = int(arg)
             elif opt in ("--pso-retrain-iters"):
                 retrain_params['iters'] = int(arg)
+            elif opt in ("--pso-particles"):
+                topology['particles'] = int(arg)
+            elif opt in ("--pso-neighbours"):
+                topology['neighbours'] = int(arg)
 
-        PSO_Cerebro, PSO_Strategy = execute_pso_strategy(df, options, retrain_params, commission, quote, s_test, e_test, iters, normalization)
+        PSO_Cerebro, PSO_Strategy = execute_pso_strategy(df, options, topology, retrain_params, commission, quote, s_test, e_test, iters, normalization)
         strategy_list.append((PSO_Strategy, 'Particle Swarm Optimization'))
 
     if len(strategy_list) == 0:
@@ -213,12 +229,13 @@ EXECUTION EXAMPLES
 
 PSO Strategy
 
+Two moving averages:
+
+> python3 main.py -s two-ma -q SAN -f 2011-12-22 -t 2013-12-22 --optimize
+
 python3 main.py -s all -q SAN -f 2011-12-22 -t 2013-12-22 --pso-iters 10
 
 python3 main.py -s all -q SAN -f 2011-12-22 -t 2013-12-22 --pso-iters 10 --pso-retrain-repeat 100 --pso-retrain-interval 50 --pso-retrain-iters 5
-
-
-
 
 
 '''
