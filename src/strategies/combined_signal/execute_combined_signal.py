@@ -1,26 +1,14 @@
 # -*- coding: utf-8 -*-
-import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 import pyswarms as ps
-from sklearn.preprocessing import StandardScaler
 
 # Import utils function
-import src.utils.func_utils as func_utils
-
-# Import classes
-from src.classes.myCerebro import MyCerebro
-from src.classes.myAnalyzer import MyAnalyzer
-from src.classes.myBuySell import MyBuySell
-from src.classes.maxRiskSizer import MaxRiskSizer
-
-# Import strategies execution
-import src.strategies_execution.execution_analysis as execution_analysis
-import src.strategies_execution.execution_plot as execution_plot
-from src.strategies_execution.executions import print_execution_name
-from src.strategies_execution.executions import execute_strategy
+from src.strategies.combined_signal.utils import *
 
 # Import strategy
+from src.strategies_execution.executions import print_execution_name
+from src.strategies_execution.executions import execute_strategy
 from src.strategies.combined_signal.genetic_representation import GeneticRepresentation
 from src.strategies.combined_signal.strategy_combined_signal import CombinedSignalStrategy
 
@@ -98,7 +86,7 @@ def execute_pso_strategy(df, options, topology, retrain_params, commission, data
 
     # Create an instance from CombinedSignalStrategy class and assign parameters
     PSO_Strategy = CombinedSignalStrategy
-    w, buy_threshold, sell_threshold = func_utils.get_split_w_threshold(best_pos)
+    w, buy_threshold, sell_threshold = get_split_w_threshold(best_pos)
 
     """
     print("Umbral de compra: ", buy_threshold)

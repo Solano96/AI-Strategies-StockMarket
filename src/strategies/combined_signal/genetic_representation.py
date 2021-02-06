@@ -1,6 +1,6 @@
 import numpy as np
 import src.utils.indicators as indicators
-import src.utils.func_utils as func_utils
+from src.strategies.combined_signal.utils import *
 
 
 class GeneticRepresentation():
@@ -68,7 +68,7 @@ class GeneticRepresentation():
             buy_day_list = []
             sell_day_list = []
 
-            w, buy_threshold, sell_threshold = func_utils.get_split_w_threshold(alpha, normalization)
+            w, buy_threshold, sell_threshold = get_split_w_threshold(alpha, normalization)
 
             for i in range(size):
 
@@ -77,7 +77,7 @@ class GeneticRepresentation():
 
                 elif i < size-1:
 
-                    final_signal = func_utils.get_combined_signal(self.moving_average_rules, moving_averages_evaluate, w, i)
+                    final_signal = get_combined_signal(self.moving_average_rules, moving_averages_evaluate, w, i)
 
                     if final_signal > buy_threshold and not in_market:
                         in_market = True

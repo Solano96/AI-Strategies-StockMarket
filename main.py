@@ -7,14 +7,7 @@ import os
 import sys, getopt
 
 import src.utils.func_utils as func_utils
-from src.strategies_execution.executions import *
-import src.strategies_execution.execution_plot as execution_plot
-from src.strategies.buy_and_hold.execute_buy_and_hold import execute_buy_and_hold_strategy
-from src.strategies.one_moving_average.execute_one_moving_average import execute_one_moving_average_strategy
-from src.strategies.moving_averages_cross.execute_moving_averages_cross import execute_moving_averages_cross_strategy
-from src.strategies.moving_average_rsi.execute_moving_average_rsi import execute_moving_average_rsi_strategy
-from src.strategies.neural_network.execute_neural_network import execute_neural_network_strategy
-from src.strategies.combined_signal.execute_combined_signal import execute_pso_strategy
+from src.strategies_execution.execution_plot import plot_capital
 
 import warnings
 
@@ -83,7 +76,8 @@ def main(argv):
         elif opt in("-v", "--verbose"):
             logging.disable(logging.NOTSET)
 
-    # Download data
+    # ------------------------------ Download data ------------------------------ #
+
     df = func_utils.getData(quote)
 
     strategy_list = []
@@ -91,6 +85,9 @@ def main(argv):
     # -------------------- Execute buy and hold strategy -------------------- #
 
     if strategy in ('buy-and-hold', 'all'):
+        # Import strategy execution
+        from src.strategies.buy_and_hold.execute_buy_and_hold import execute_buy_and_hold_strategy
+
         BH_Cerebro, BH_Strategy = execute_buy_and_hold_strategy(df, commission, quote, s_test, e_test)
         strategy_list.append((BH_Strategy, 'Comprar y Mantener'))
 
@@ -98,6 +95,9 @@ def main(argv):
     # -------------------- Execute classic strategy -------------------- #
 
     if strategy in ('classic'):
+        # Import strategy execution
+        from src.strategies.moving_average_rsi.execute_moving_average_rsi import execute_moving_average_rsi_strategy
+
         Classic_Cerebro, Classic_Strategy = execute_moving_average_rsi_strategy(df, commission, quote, s_test, e_test)
         strategy_list.append((Classic_Strategy, 'Estrategia Clásica'))
 
@@ -105,6 +105,8 @@ def main(argv):
     # -------------------- Execute one moving average -------------------- #
 
     if strategy in ('one-ma', 'all'):
+        # Import strategy execution
+        from src.strategies.one_moving_average.execute_one_moving_average import execute_one_moving_average_strategy
 
         params = {}
 
@@ -122,6 +124,8 @@ def main(argv):
     # -------------------- Execute two moving average -------------------- #
 
     if strategy in ('two-ma', 'all'):
+        # Import strategy execution
+        from src.strategies.moving_averages_cross.execute_moving_averages_cross import execute_moving_averages_cross_strategy
 
         params = {}
 
@@ -141,6 +145,8 @@ def main(argv):
     # -------------------- Execute neural network strategy -------------------- #
 
     if strategy in ('neural-network'):
+        # Import strategy execution
+        from src.strategies.neural_network.execute_neural_network import execute_neural_network_strategy
 
         options = {'gain': 0.07, 'loss': 0.05, 'n_day': 10, 'epochs': 300}
 
@@ -161,6 +167,8 @@ def main(argv):
     # -------------------- Execute combined signal strategy optimized with pso -------------------- #
 
     if strategy in ('combined-signal-pso', 'all'):
+        # Import strategy execution
+        from src.strategies.combined_signal.execute_combined_signal import execute_pso_strategy
 
         normalization = 'exponential'
 
@@ -215,7 +223,7 @@ def main(argv):
         print("ERROR: incorrect strategy name. Please select one between: buy-and-hold | classic | neural-network | combined-signal-pso | all.")
         sys.exit(2)
 
-    execution_plot.plot_capital(strategy_list, quote, strategy, s_test, e_test)
+    plot_capital(strategy_list, quote, strategy, s_test, e_test)
 
 
 if __name__ == "__main__":

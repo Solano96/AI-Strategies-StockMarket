@@ -6,7 +6,7 @@ from datetime import timedelta
 
 import backtrader as bt
 from numpy.random import seed
-import src.utils.func_utils as func_utils
+from src.strategies.combined_signal.utils import *
 from src.strategies.log_strategy import LogStrategy
 
 
@@ -94,10 +94,10 @@ class CombinedSignalStrategy(LogStrategy):
                 kwargs={'from_date': from_date, 'to_date': to_date}
                 best_cost, best_pos = self.optimizer.optimize(self.gen_representation.cost_function, iters=iters, **kwargs)
 
-                self.w, self.buy_threshold, self.sell_threshold = func_utils.get_split_w_threshold(best_pos, self.normalization)
+                self.w, self.buy_threshold, self.sell_threshold = get_split_w_threshold(best_pos, self.normalization)
 
         # Get combined signal
-        final_signal = func_utils.get_combined_signal(self.moving_average_rules, self.moving_averages, self.w, len(self)-1)
+        final_signal = get_combined_signal(self.moving_average_rules, self.moving_averages, self.w, len(self)-1)
 
         # Buy if signal is greater than buy threshold
         if not self.position and final_signal > self.buy_threshold:

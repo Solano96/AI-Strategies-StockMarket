@@ -1,8 +1,10 @@
 import numpy as np
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Flatten
+from keras.layers import Dropout
 from keras.optimizers import SGD
 from keras.regularizers import l2
+import keras
 
 
 class NeuralNetwork():
@@ -34,14 +36,21 @@ class NeuralNetwork():
 		"""
 
 		self.model.add(Dense(128, activation='relu', input_shape = input_shape, kernel_regularizer=l2(self.l2), bias_regularizer=l2(self.l2)))
+		#self.model.add(Dropout(0.5))
 		self.model.add(Dense(64, activation='relu', kernel_regularizer=l2(self.l2), bias_regularizer=l2(self.l2)))
+		#self.model.add(Dropout(0.5))
 		self.model.add(Dense(16, activation='relu', kernel_regularizer=l2(self.l2), bias_regularizer=l2(self.l2)))
+		#self.model.add(Dropout(0.5))
 		self.model.add(Dense(8, activation='relu', kernel_regularizer=l2(self.l2), bias_regularizer=l2(self.l2)))
+		#self.model.add(Dropout(0.5))
 		self.model.add(Flatten())
 		self.model.add(Dense(1, activation='tanh', kernel_regularizer=l2(self.l2), bias_regularizer=l2(self.l2)))
 
 		sgd = SGD(lr=self.lr, decay=1e-6, momentum=0.5, nesterov=True)
 		self.model.compile(loss='mean_squared_error', optimizer=sgd, metrics=['accuracy'])
+		#self.model.compile(optimizer = keras.optimizers.Adam(lr = 1e-4, decay=1e-6),
+		#	              loss = keras.losses.binary_crossentropy,
+		#	              metrics = ['accuracy'])
 
 	def train(self, x, y, epochs, verbose=0):
 		"""

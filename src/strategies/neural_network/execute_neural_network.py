@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 from sklearn.preprocessing import StandardScaler
@@ -7,19 +6,8 @@ from sklearn.preprocessing import StandardScaler
 # Import utils function
 import src.utils.func_utils as func_utils
 
-# Import classes
-from src.classes.myCerebro import MyCerebro
-from src.classes.myAnalyzer import MyAnalyzer
-from src.classes.myBuySell import MyBuySell
-from src.classes.maxRiskSizer import MaxRiskSizer
-
-# Import strategies execution
-import src.strategies_execution.execution_analysis as execution_analysis
-import src.strategies_execution.execution_plot as execution_plot
 from src.strategies_execution.executions import print_execution_name
 from src.strategies_execution.executions import execute_strategy
-
-# Import strategy
 from src.strategies.neural_network.class_neural_network import NeuralNetwork
 from src.strategies.neural_network.strategy_neural_network import NeuralNetworkStrategy
 
