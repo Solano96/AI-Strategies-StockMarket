@@ -2,7 +2,7 @@ pandas==0.24.2
 sklearn==0.0
 TA-Lib==0.4.17
 fix-yahoo-finance==0.1.30
-tensorflow==1.15.2
+tensorflow==2.9.3
 keras==2.2.5
 backtrader==1.9.74.123
 mpl_finance==0.10.0
